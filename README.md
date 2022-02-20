@@ -1,4 +1,8 @@
-# Fudd 
+# FUDD 
+
+[![LICENSE](https://img.shields.io/badge/license-GPL3.0-blue.svg)](LICENSE)
+![Build Status](https://github.com/ContractBridge/fudd/actions/workflows/basic.yaml/badge.svg)
+[![Crates.io Version](https://img.shields.io/crates/v/fudd.svg)](https://crates.io/crates/fudd)
 
 🚧 **Work In Progress** 🚧
 
