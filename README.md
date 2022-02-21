@@ -125,6 +125,7 @@ to my [cardpack.rs](https://github.com/ContractBridge/cardpack.rs) library:
           * [ACE_eval](https://github.com/ashelly/ACE_eval) (C)
     * [manuelbucher/distributed-cards](https://gitlab.com/manuelbucher/distributed-cards) - [crate](https://crates.io/crates/distributed-cards) Implements the mental poker shuffling algorithm
     * [lucasholder/fair](https://github.com/lucasholder/fair) - [crate](https://crates.io/crates/fair) CLI tool and library for verifying provably fair games (baccarat, etc.).
+    * [davefol/Poker-Range-Trainer](https://github.com/davefol/Poker-Range-Trainer)
 * Articles
   * [How to Compute the Probability of Equal-Rank Cards in Stud Poker](https://stattrek.com/poker/probability-of-equal-rank-cards.aspx)
   * [Interactive Mathematics Miscellany and Puzzles](https://www.cut-the-knot.org/) > [Probabilities](https://www.cut-the-knot.org/probability.shtml) > [Example: A Poker Hand](https://www.cut-the-knot.org/Probability/PokerSampleSpaces.shtml)
