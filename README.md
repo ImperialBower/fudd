@@ -139,6 +139,9 @@ to my [cardpack.rs](https://github.com/ContractBridge/cardpack.rs) library:
   * [Counting Outs](https://www.countingouts.com/)
   * [Roguelike Tutorial - In Rust](http://bfnightly.bracketproductions.com/rustbook/)
     * [Patreon](https://www.patreon.com/m/505827/posts)
+  * Chen Formula
+    * [Chen Formula](https://www.thepokerbank.com/strategy/basic/starting-hand-selection/chen-formula/)
+    * [The Strategy Behind The Chen Formula in Poker](https://www.888poker.com/magazine/strategy/chen-formula#The%20Chen%20Formula%20%E2%80%93%20Usage)
 * Commercial Tools
   * [ProPokerTools](http://www.propokertools.com/)
     * [PQL](http://www.propokertools.com/pql)
