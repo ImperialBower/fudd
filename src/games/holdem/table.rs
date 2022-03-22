@@ -11,6 +11,7 @@ use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use ckc_rs::HandError;
 use rand::Rng;
+// use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use wyz::FmtForward;
@@ -91,25 +92,9 @@ impl Table {
             return CaseEvals::default();
         }
         let mut evals = CaseEvals::default();
-        let rem = self.remaining_at_deal();
-        for i1 in 0..rem.len() {
-            for i2 in (i1 + 1)..rem.len() {
-                for i3 in (i2 + 2)..rem.len() {
-                    for i4 in (i3 + 3)..rem.len() {
-                        for i5 in (i4 + 4)..rem.len() {
-                            let v = vec![
-                                *rem.get_index(i1).unwrap(),
-                                *rem.get_index(i2).unwrap(),
-                                *rem.get_index(i3).unwrap(),
-                                *rem.get_index(i4).unwrap(),
-                                *rem.get_index(i5).unwrap(),
-                            ];
-                            let cycle = PlayingCards::from(v);
-                            evals.push(self.players.case_eval(&cycle));
-                        }
-                    }
-                }
-            }
+        for v in self.remaining_at_deal().combinations(5) {
+            let cycle = PlayingCards::from(v);
+            evals.push(self.players.case_eval(&cycle));
         }
         evals
     }
@@ -119,23 +104,15 @@ impl Table {
     ///
     /// **NOTE** This method does not take into account any burned cards, only dealing with
     /// `PokerCards` that are not actively being held by players at the `Table` or the `Flop`.
-    ///
-    /// # Panics
-    ///
-    /// Will only panic if the remaining() function is seriously out of wack.
     pub fn eval_at_flop(&self) -> CaseEvals {
         if !self.board.flop.is_dealt() {
             return CaseEvals::default();
         }
         let mut evals = CaseEvals::default();
-        let rem = self.remaining_at_flop();
-        for i1 in 0..rem.len() {
-            for i2 in (i1 + 1)..rem.len() {
-                let v = vec![*rem.get_index(i1).unwrap(), *rem.get_index(i2).unwrap()];
-                let mut cycle = PlayingCards::from(v);
-                cycle.append(&self.board.flop.to_playing_cards());
-                evals.push(self.players.case_eval(&cycle));
-            }
+        for v in self.remaining_at_flop().combinations(2) {
+            let mut cycle = PlayingCards::from(v);
+            cycle.append(&self.board.flop.to_playing_cards());
+            evals.push(self.players.case_eval(&cycle));
         }
         evals
     }
@@ -292,7 +269,7 @@ impl Table {
             let chances = self.chances_at_deal();
             for k in chances.keys() {
                 let row = format!(
-                    "Seat #{} {}: {:.1}%",
+                    "Seat #{} {}: {:.1}% ",
                     k,
                     self.players.get(*k).unwrap(),
                     chances.get(*k)
@@ -359,27 +336,27 @@ impl Table {
             let chances = case_evals.chances();
             println!("\nThe Turn: {}", self.board.turn);
             println!("Chances of winning:");
+            //
+            // let winner = case_evals.winners().winners();
+            //
+            // for k in chances.keys() {
+            //     if winner.has_seat(*k) {
+            //         println!(
+            //             "Seat {}: {:.1}% - Best Hand: {}",
+            //             k,
+            //             chances.get(*k),
+            //             winner.get_seat(*k).unwrap().eval
+            //         );
+            //     } else {
+            //         let player_outs = outs.get_unless_most(*k);
+            //         match player_outs {
+            //             Some(o) => println!("Seat {}: {:.1}% - Outs: {}", k, chances.get(*k), o),
+            //             None => println!("Seat {}: {:.1}%", k, chances.get(*k)),
+            //         };
+            //     }
+            // }
 
-            let winner = case_evals.winners().winners();
-
-            for k in chances.keys() {
-                if winner.has_seat(*k) {
-                    println!(
-                        "Seat {}: {:.1}% - Best Hand: {}",
-                        k,
-                        chances.get(*k),
-                        winner.get_seat(*k).unwrap().eval
-                    );
-                } else {
-                    let player_outs = outs.get_unless_most(*k);
-                    match player_outs {
-                        Some(o) => println!("Seat {}: {:.1}% - Outs: {}", k, chances.get(*k), o),
-                        None => println!("Seat {}: {:.1}%", k, chances.get(*k)),
-                    };
-                }
-            }
-
-            // chances.playout_with_outs(&outs);
+            chances.playout_with_outs(&outs);
 
             true
         } else {
@@ -500,6 +477,21 @@ impl TryFrom<&'static str> for Table {
 #[allow(non_snake_case)]
 mod holdem_table_tests {
     use super::*;
+
+    #[test]
+    fn eval_from_flop() {
+        let player_count: usize = 3;
+        let table = Table::seat(player_count);
+        let index = "Q♠ 4♦ 8♥ 5♦ 2♠ 4♠ J♦ 7♠ 9♣ 8♠ 6♦ 2♦ J♥ Q♥ 6♠ 4♥ T♣ 4♣ 6♣ 8♦ A♣ 3♣ A♥ 8♣ J♠ 9♠ 7♣ T♠ Q♣ T♦ 9♦ 5♠ 7♥ 2♣ 3♥ 5♣ 7♦ 3♦ 3♠ Q♦ K♥ A♠ K♦ 9♥ K♠ 5♥ K♣ 2♥ T♥ 6♥ A♦ J♣";
+        let mut cards = PlayingCards::try_from(index).unwrap();
+
+        for _ in 0..(player_count * 2) + 5 {
+            table.take(cards.draw_one());
+        }
+
+        let evals = table.eval_at_flop();
+        assert_eq!(903, evals.len())
+    }
 
     #[test]
     fn from_index() {

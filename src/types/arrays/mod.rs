@@ -1,6 +1,6 @@
 use crate::analysis::eval::Eval;
 use crate::analysis::evals::Evals;
-use crate::types::arrays::five_cards::FiveCards;
+use crate::types::arrays::five_card::FiveCard;
 use crate::types::bitvec::bit_cards::BitCards;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
@@ -8,18 +8,18 @@ use crate::types::U32Card;
 use cardpack::Pile;
 use ckc_rs::hand_rank::HandRank;
 
-pub mod five_cards;
-pub mod four_cards;
+pub mod five_card;
+pub mod four_card;
 pub mod range_vector;
-pub mod seven_cards;
-pub mod six_cards;
-pub mod three_cards;
-pub mod two_cards;
+pub mod seven_card;
+pub mod six_card;
+pub mod three_card;
+pub mod two_card;
 
 pub trait Evaluable {
     /// Returns the best `FiveCards` hand and `HandRank` without
     /// passing it into eval where the hand will be sorted.
-    fn evaluate(&self) -> (FiveCards, HandRank) {
+    fn evaluate(&self) -> (FiveCard, HandRank) {
         let evals = self.evals();
         let best = evals.best();
         (best.hand, best.rank)

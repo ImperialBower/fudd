@@ -1,4 +1,4 @@
-use crate::types::arrays::four_cards::FourCards;
+use crate::types::arrays::four_card::FourCard;
 use crate::types::card_slot::CardSlot;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
@@ -150,8 +150,8 @@ impl From<[U32Card; 4]> for OmahaHand {
     }
 }
 
-impl From<FourCards> for OmahaHand {
-    fn from(four_cards: FourCards) -> Self {
+impl From<FourCard> for OmahaHand {
+    fn from(four_cards: FourCard) -> Self {
         OmahaHand::from(four_cards.to_arr())
     }
 }
@@ -174,7 +174,7 @@ mod types_slots_omaha_hand_tests {
     #[test]
     fn from__four_cards() {
         let index = "AS KD 4C 2S";
-        let four = FourCards::try_from(index).unwrap();
+        let four = FourCard::try_from(index).unwrap();
         let omaha = OmahaHand::from(index);
 
         assert_eq!(four.to_string(), omaha.to_string());

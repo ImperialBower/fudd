@@ -1,7 +1,7 @@
 use crate::analysis::eval::Eval;
-use crate::types::arrays::five_cards::FiveCards;
-use crate::types::arrays::seven_cards::SevenCards;
-use crate::types::arrays::two_cards::TwoCards;
+use crate::types::arrays::five_card::FiveCard;
+use crate::types::arrays::seven_card::SevenCard;
+use crate::types::arrays::two_card::TwoCard;
 use crate::types::arrays::Evaluable;
 use crate::types::playing_card::PlayingCard;
 use crate::types::poker_cards::PokerCards;
@@ -11,7 +11,10 @@ use crate::util::random_ordering::RandomOrdering;
 use cardpack::{Pile, Standard52};
 use ckc_rs::{HandError, PokerCard};
 use core::fmt;
+use indexmap::set::Iter;
 use indexmap::IndexSet;
+use itertools::{Combinations, Itertools};
+use rayon::prelude::*;
 use std::fmt::Formatter;
 
 const NUMBER_OF_SHUFFLES: u8 = 5;
@@ -22,7 +25,8 @@ pub struct PlayingCards(IndexSet<PlayingCard>);
 impl PlayingCards {
     #[must_use]
     pub fn deck() -> PlayingCards {
-        PlayingCards(PokerDeck::iter().map(PlayingCard::from).collect())
+        let set: Vec<PlayingCard> = PokerDeck::par_iter().map(PlayingCard::from).collect();
+        PlayingCards::from(set)
     }
 
     /// Returns all the cards in a `PokerDeck` minus the ones passed in.
@@ -51,6 +55,10 @@ impl PlayingCards {
         for card in playing_cards.iter() {
             self.insert(*card);
         }
+    }
+
+    pub fn combinations(&self, k: usize) -> Combinations<Iter<'_, PlayingCard>> {
+        self.iter().combinations(k)
     }
 
     #[must_use]
@@ -203,9 +211,9 @@ impl PlayingCards {
     /// # Errors
     ///
     /// Will throw a `HandError` if there are not exactly 5 cards.
-    pub fn to_five_cards(&self) -> Result<FiveCards, HandError> {
+    pub fn to_five_cards(&self) -> Result<FiveCard, HandError> {
         match self.to_five_array() {
-            Ok(hand) => Ok(FiveCards::from(hand)),
+            Ok(hand) => Ok(FiveCard::from(hand)),
             Err(e) => Err(e),
         }
     }
@@ -214,8 +222,8 @@ impl PlayingCards {
     ///
     /// Will throw a `HandError` if there are not exactly 7 cards.
     #[allow(clippy::missing_panics_doc)]
-    pub fn to_seven_array(&self) -> Result<SevenCards, HandError> {
-        SevenCards::try_from(self)
+    pub fn to_seven_array(&self) -> Result<SevenCard, HandError> {
+        SevenCard::try_from(self)
         // match self.len() {
         //     0..=6 => Err(HandError::NotEnoughCards),
         //     7 => Ok(SevenCards::try_from()),
@@ -226,6 +234,13 @@ impl PlayingCards {
     #[must_use]
     pub fn to_vec(&self) -> Vec<PlayingCard> {
         self.iter().copied().collect::<Vec<PlayingCard>>()
+    }
+
+    #[must_use]
+    pub fn two_cards(&self) -> Vec<TwoCard> {
+        self.combinations(2)
+            .map(TwoCard::from)
+            .collect::<Vec<TwoCard>>()
     }
 }
 
@@ -285,6 +300,20 @@ impl From<&Vec<U32Card>> for PlayingCards {
     }
 }
 
+impl From<Vec<&PlayingCard>> for PlayingCards {
+    fn from(v: Vec<&PlayingCard>) -> Self {
+        let filtered = v.iter().filter_map(|c| {
+            let pc = **c;
+            if pc.is_blank() {
+                None
+            } else {
+                Some(pc)
+            }
+        });
+        PlayingCards(filtered.collect())
+    }
+}
+
 impl From<PlayingCard> for PlayingCards {
     fn from(playing_card: PlayingCard) -> Self {
         PlayingCards::from(vec![playing_card])
@@ -312,10 +341,10 @@ impl TryFrom<&'static str> for PlayingCards {
     }
 }
 
-impl TryFrom<TwoCards> for PlayingCards {
+impl TryFrom<TwoCard> for PlayingCards {
     type Error = HandError;
 
-    fn try_from(value: TwoCards) -> Result<Self, Self::Error> {
+    fn try_from(value: TwoCard) -> Result<Self, Self::Error> {
         if value.is_dealt() {
             let mut cards = PlayingCards::default();
             cards.insert(PlayingCard::from(value.first()));
@@ -354,6 +383,19 @@ mod playing_cards_tests {
         cards.insert(PlayingCard::from("KD"));
 
         assert!(!is_royal_flush(&cards));
+    }
+
+    #[test]
+    fn combinations() {
+        let aces = PlayingCards::try_from("AS AH AD AC").unwrap();
+        assert_eq!(6, aces.combinations(2).count());
+        assert_eq!(2_598_960, PlayingCards::deck().combinations(5).count());
+    }
+
+    #[test]
+    fn two_cards() {
+        let aces = PlayingCards::try_from("AS AH AD AC").unwrap().two_cards();
+        assert_eq!(6, aces.len());
     }
 
     #[test]
@@ -524,14 +566,14 @@ mod playing_cards_tests {
 
     #[test]
     fn try_from__two_cards() {
-        let actual = PlayingCards::try_from(TwoCards::try_from("Q♠ J♠").unwrap()).unwrap();
+        let actual = PlayingCards::try_from(TwoCard::try_from("Q♠ J♠").unwrap()).unwrap();
 
         assert_eq!("Q♠ J♠", actual.to_string());
     }
 
     #[test]
     fn try_from__two_cards__invalid() {
-        let actual = PlayingCards::try_from(TwoCards::default());
+        let actual = PlayingCards::try_from(TwoCard::default());
 
         assert!(actual.is_err());
     }

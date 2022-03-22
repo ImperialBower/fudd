@@ -2,6 +2,7 @@ use clap::Parser;
 use fudd::games::holdem::board::Board;
 use fudd::games::holdem::seats::Seats;
 use fudd::games::holdem::table::Table;
+use std::time::Instant;
 
 extern crate log;
 
@@ -44,7 +45,11 @@ struct Args {
 // cargo run --example calc -- -d "7♠ 6♠ Q♠ Q♦" -b "2♠ 7♥ 9♠ T♦ 4♣" HSP S08E07 Bellande Schwimer FIRST RUN
 // cargo run --example calc -- -d "7♠ 6♠ Q♠ Q♦" -b "2♠ 7♥ 9♠ A♠ K♠" HSP S08E07 Bellande Schwimer SECOND RUN
 // cargo run --example calc -- -d "T♦ 9♦ 2♠ 2♥" -b "2♦ T♥ 7♦ 8♦ 6♥" DNEGS https://youtu.be/yyPU25EGLkA?t=123
+// cargo run --example calc -- -d "A♦ Q♠ K♣ Q♦" -b "J♥ 9♠ A♣ 4♦ T♣" HSP S09E03 DNEGS/Bellands
+// cargo run --example calc -- -d "J♥ 8♠ K♠ J♠ 3♠ 3♥" -b "7♥ 8♦ 2♣ 5♣ Q♠" HSP S09E04 Adelstein/Liu/Antonius
+//
 fn main() {
+    let start = Instant::now();
     env_logger::init();
     let args = Args::parse();
 
@@ -71,6 +76,10 @@ fn main() {
     } else {
         table.play_out();
     }
+
+    let duration = start.elapsed();
+
+    println!("Time taken performing calc: {:?}", duration);
 
     // Print a prettified version of the command back out.
     println!("\nCommand:");

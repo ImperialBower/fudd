@@ -7,11 +7,12 @@ pub mod evals_7card;
 pub mod holdem_playout;
 pub mod indexed;
 pub mod outs;
+pub mod preflop;
 pub mod seat_calc;
 
-use crate::types::arrays::five_cards::FiveCards;
-use crate::types::poker_deck::PokerDeck;
-use crate::types::U32Card;
+use crate::types::arrays::five_card::FiveCard;
+use crate::types::arrays::Evaluable;
+use crate::types::poker_deck::POKER_DECK;
 use ckc_rs::hand_rank::{HandRank, HandRankClass, HandRankName};
 use log::debug;
 use std::collections::HashMap;
@@ -35,6 +36,7 @@ impl Evaluate {
     /// of the hand ranking system in the examples folder.
     ///
     #[must_use]
+    #[allow(clippy::missing_panics_doc)]
     pub fn all_possible_combos() -> (
         HashMap<HandRankClass, usize>,
         HashMap<HandRankName, usize>,
@@ -43,34 +45,12 @@ impl Evaluate {
         let mut rank_class_count: HashMap<HandRankClass, usize> = HashMap::new();
         let mut rank_name_count: HashMap<HandRankName, usize> = HashMap::new();
         let mut rank_count: HashMap<HandRank, bool> = HashMap::new();
-
-        let dummy_kev_value: U32Card = 0;
-        let mut current_hand: [U32Card; 5] = [dummy_kev_value; 5];
-
-        // 2,598,960 unique poker hands
-        for i1 in 0..52 {
-            for i2 in (i1 + 1)..52 {
-                for i3 in (i2 + 1)..52 {
-                    for i4 in (i3 + 1)..52 {
-                        for i5 in (i4 + 1)..52 {
-                            current_hand[0] = PokerDeck::get(i1);
-                            current_hand[1] = PokerDeck::get(i2);
-                            current_hand[2] = PokerDeck::get(i3);
-                            current_hand[3] = PokerDeck::get(i4);
-                            current_hand[4] = PokerDeck::get(i5);
-
-                            let hand_rank = Evaluate::five_cards(FiveCards::from(current_hand));
-                            debug!("{} {}", FiveCards::from(current_hand), hand_rank);
-
-                            // mark the rank in the map
-                            rank_count.entry(hand_rank).or_insert(true);
-
-                            let class_count = rank_class_count.entry(hand_rank.class).or_insert(0);
-                            *class_count += 1;
-                        }
-                    }
-                }
-            }
+        for v in POKER_DECK.combinations(5) {
+            let (hand, hand_rank) = FiveCard::try_from(v).unwrap().evaluate();
+            debug!("{} {}", hand, hand_rank);
+            rank_count.entry(hand_rank).or_insert(true);
+            let class_count = rank_class_count.entry(hand_rank.class).or_insert(0);
+            *class_count += 1;
         }
 
         for key in rank_count.keys() {
@@ -92,7 +72,7 @@ impl Evaluate {
 
     /// Call to core hand analysis library. This is the heart of the system.
     #[must_use]
-    pub fn five_cards(five_cards: FiveCards) -> HandRank {
+    pub fn five_cards(five_cards: FiveCard) -> HandRank {
         HandRank::from(ckc_rs::evaluate::five_cards(five_cards.to_arr()))
     }
 
@@ -113,7 +93,7 @@ impl Evaluate {
 mod evaluate_tests {
     use super::*;
     use crate::analysis::eval::Eval;
-    use crate::types::arrays::five_cards::FiveCards;
+    use crate::types::arrays::five_card::FiveCard;
     use ckc_rs::hand_rank::HandRankValue;
     use rstest::rstest;
     use strum::IntoEnumIterator;
@@ -194,7 +174,7 @@ mod evaluate_tests {
         #[case] hand_rank_value: HandRankValue,
         #[case] hand_rank_name: HandRankName,
     ) {
-        let hand = FiveCards::try_from(index).unwrap();
+        let hand = FiveCard::try_from(index).unwrap();
 
         let actual_hand_rank = Evaluate::five_cards(hand);
 
