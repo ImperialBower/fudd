@@ -1,6 +1,6 @@
 use crate::analysis::eval::Eval;
 use crate::games::holdem::seat::Seat;
-use crate::types::arrays::five_cards::FiveCards;
+use crate::types::arrays::five_card::FiveCard;
 use crate::types::slots::flop::Flop;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -12,7 +12,7 @@ pub struct SeatEval {
 }
 
 impl SeatEval {
-    pub fn new(seat: Seat, hand: FiveCards) -> SeatEval {
+    pub fn new(seat: Seat, hand: FiveCard) -> SeatEval {
         SeatEval {
             seat,
             eval: Eval::from(hand),

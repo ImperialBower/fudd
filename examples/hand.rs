@@ -1,6 +1,6 @@
 use clap::Parser;
 use fudd::analysis::eval::Eval;
-use fudd::types::arrays::five_cards::FiveCards;
+use fudd::types::arrays::five_card::FiveCard;
 use fudd::util::str_from_string;
 
 #[derive(Parser, Debug)]
@@ -20,7 +20,7 @@ fn main() {
     let args = Args::parse();
 
     let s = str_from_string(args.hand);
-    let hand = FiveCards::try_from(s);
+    let hand = FiveCard::try_from(s);
     match hand {
         Ok(h) => println!("{}", Eval::from(h)),
         Err(e) => println!("{:?}", e),

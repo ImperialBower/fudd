@@ -1,4 +1,4 @@
-use crate::types::arrays::five_cards::FiveCards;
+use crate::types::arrays::five_card::FiveCard;
 use crate::types::arrays::{Evaluable, Vectorable};
 use crate::types::poker_cards::PokerCards;
 use crate::types::U32Card;
@@ -23,10 +23,10 @@ use std::fmt;
 /// use std::convert::TryFrom;
 /// use ckc_rs::PokerCard;
 /// use fudd::types::arrays::Vectorable;
-/// use fudd::types::arrays::five_cards::FiveCards;
+/// use fudd::types::arrays::five_card::FiveCard;
 /// use fudd::types::poker_cards::PokerCards;
 ///
-/// let full_house = FiveCards::try_from("AS AH AD KS KH").unwrap();
+/// let full_house = FiveCard::try_from("AS AH AD KS KH").unwrap();
 /// let pile = full_house.to_pile().sort();
 ///
 /// let s = format!("{}", PokerCards::from(pile));
@@ -39,11 +39,11 @@ use std::fmt;
 ///
 /// ```
 /// use std::convert::TryFrom;
-/// use fudd::types::arrays::five_cards::FiveCards;
+/// use fudd::types::arrays::five_card::FiveCard;
 /// use fudd::types::arrays::Vectorable;
 /// use fudd::types::poker_cards::PokerCards;
 ///
-/// let full_house = FiveCards::try_from("AS AH AD KS KH").unwrap();
+/// let full_house = FiveCard::try_from("AS AH AD KS KH").unwrap();
 /// let pile = full_house.to_pile().sort_by_frequency();
 ///
 /// let s = format!("{}", PokerCards::from(pile));
@@ -57,10 +57,10 @@ use std::fmt;
 /// ```
 /// use std::convert::TryFrom;
 /// use fudd::types::arrays::Vectorable;
-/// use fudd::types::arrays::five_cards::FiveCards;
+/// use fudd::types::arrays::five_card::FiveCard;
 /// use fudd::types::poker_cards::PokerCards;
 ///
-/// let wheel = FiveCards::try_from("AS 2S 3S 4S 5C").unwrap();
+/// let wheel = FiveCard::try_from("AS 2S 3S 4S 5C").unwrap();
 /// let pile = wheel.to_pile().sort_by_frequency();
 ///
 /// let s = format!("{}", PokerCards::from(pile));
@@ -86,12 +86,12 @@ use std::fmt;
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Eval {
     pub rank: HandRank,
-    pub hand: FiveCards,
+    pub hand: FiveCard,
 }
 
 impl Eval {
     #[must_use]
-    pub fn new(hand: FiveCards, rank: HandRank) -> Eval {
+    pub fn new(hand: FiveCard, rank: HandRank) -> Eval {
         Eval {
             hand: Eval::sort(hand, rank),
             rank,
@@ -99,7 +99,7 @@ impl Eval {
     }
 
     #[must_use]
-    pub fn raw(hand: FiveCards, rank: HandRank) -> Eval {
+    pub fn raw(hand: FiveCard, rank: HandRank) -> Eval {
         Eval { rank, hand }
     }
 
@@ -118,7 +118,7 @@ impl Eval {
     ///
     /// The only thing that isn't covered is a wheel, which we handle here.
     #[must_use]
-    fn sort(five_cards: FiveCards, hand_rank: HandRank) -> FiveCards {
+    fn sort(five_cards: FiveCard, hand_rank: HandRank) -> FiveCard {
         match hand_rank.class {
             // If it's a wheel we need to do some work.
             HandRankClass::FiveHighStraight | HandRankClass::FiveHighStraightFlush => {
@@ -126,11 +126,11 @@ impl Eval {
                 pile.sort_in_place();
                 let ace = pile.draw_first().unwrap();
                 pile.push(ace);
-                FiveCards::try_from(pile).unwrap()
+                FiveCard::try_from(pile).unwrap()
             }
             _ => {
                 let pile = five_cards.to_pile().sort_by_frequency();
-                FiveCards::try_from(pile).unwrap()
+                FiveCard::try_from(pile).unwrap()
             }
         }
     }
@@ -154,12 +154,12 @@ impl fmt::Display for Eval {
 
 impl From<[U32Card; 5]> for Eval {
     fn from(array: [U32Card; 5]) -> Self {
-        Eval::from(FiveCards::from(array))
+        Eval::from(FiveCard::from(array))
     }
 }
 
-impl From<FiveCards> for Eval {
-    fn from(five_cards: FiveCards) -> Self {
+impl From<FiveCard> for Eval {
+    fn from(five_cards: FiveCard) -> Self {
         let (_, hand_rank) = five_cards.evaluate();
 
         Eval {
@@ -187,7 +187,7 @@ impl TryFrom<&PokerCards> for Eval {
     type Error = HandError;
 
     fn try_from(value: &PokerCards) -> Result<Self, Self::Error> {
-        match FiveCards::try_from(value) {
+        match FiveCard::try_from(value) {
             Ok(cards) => Ok(Eval::from(cards)),
             Err(e) => Err(e),
         }
@@ -198,7 +198,7 @@ impl TryFrom<&'static str> for Eval {
     type Error = HandError;
 
     fn try_from(index: &'static str) -> Result<Self, Self::Error> {
-        match FiveCards::try_from(index) {
+        match FiveCard::try_from(index) {
             Ok(five_cards) => Ok(Eval::from(five_cards)),
             Err(e) => Err(e),
         }
@@ -215,7 +215,7 @@ mod eval_tests {
     #[test]
     fn sort() {
         let hand = Eval::try_from("K♠ A♣ Q♠ J♠ T♠").unwrap();
-        let ex = FiveCards::try_from("A♣ K♠ Q♠ J♠ T♠").unwrap();
+        let ex = FiveCard::try_from("A♣ K♠ Q♠ J♠ T♠").unwrap();
 
         assert_eq!(hand.hand, ex);
     }
@@ -249,8 +249,8 @@ mod eval_tests {
     #[case("K♣ K♥ A♦ 6♦ 6♥", "K♥ K♣ 6♥ 6♦ A♦")]
     fn sort_many(#[case] index: &'static str, #[case] expected: &'static str) {
         let hand = Eval::try_from(index).unwrap();
-        let ex = FiveCards::try_from(expected).unwrap();
-        let index = FiveCards::try_from(index).unwrap();
+        let ex = FiveCard::try_from(expected).unwrap();
+        let index = FiveCard::try_from(index).unwrap();
 
         assert_eq!(hand.hand, ex);
         assert_ne!(index, ex);
@@ -277,7 +277,7 @@ mod eval_tests {
         ];
 
         let expected = Eval {
-            hand: FiveCards::from([
+            hand: FiveCard::from([
                 CardNumber::KING_SPADES,
                 CardNumber::KING_DIAMONDS,
                 CardNumber::JACK_SPADES,
@@ -294,7 +294,7 @@ mod eval_tests {
 
     #[test]
     fn from__five_cards() {
-        let raw = FiveCards::from([
+        let raw = FiveCard::from([
             CardNumber::JACK_CLUBS,
             CardNumber::JACK_SPADES,
             CardNumber::KING_DIAMONDS,
@@ -303,7 +303,7 @@ mod eval_tests {
         ]);
 
         let expected = Eval {
-            hand: FiveCards::from([
+            hand: FiveCard::from([
                 CardNumber::KING_SPADES,
                 CardNumber::KING_DIAMONDS,
                 CardNumber::JACK_SPADES,

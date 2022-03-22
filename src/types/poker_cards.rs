@@ -1,8 +1,9 @@
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
+use crate::types::poker_deck::PokerDeck;
 use crate::types::U32Card;
 use cardpack::{Pile, Standard52};
-use ckc_rs::{CardNumber, HandError, PokerCard};
+use ckc_rs::{CardNumber, CardRank, HandError, PokerCard};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use std::fmt;
@@ -13,6 +14,16 @@ pub const POSSIBLE_COMBINATIONS: usize = 7937;
 pub struct PokerCards(Vec<U32Card>);
 
 impl PokerCards {
+    #[must_use]
+    pub fn deck() -> PokerCards {
+        PokerDeck::poker_cards()
+    }
+
+    #[must_use]
+    pub fn contains(&self, card: &U32Card) -> bool {
+        self.0.contains(card)
+    }
+
     #[must_use]
     pub fn deal(&mut self, number: usize) -> PokerCards {
         if self.len() >= number {
@@ -59,6 +70,17 @@ impl PokerCards {
                 .clone()
                 .into_iter()
                 .filter(|c| *c != CardNumber::BLANK)
+                .collect::<Vec<U32Card>>(),
+        )
+    }
+
+    #[must_use]
+    pub fn filter_eqgt_on_rank(&self, rank: CardRank) -> PokerCards {
+        PokerCards::from(
+            self.0
+                .clone()
+                .into_iter()
+                .filter(|c| c.get_card_rank() as u8 >= rank as u8)
                 .collect::<Vec<U32Card>>(),
         )
     }
@@ -227,6 +249,15 @@ mod poker_cards_tests {
     use crate::types::poker_deck::PokerDeck;
 
     #[test]
+    fn contains() {
+        let poker_cards = PokerCards::try_from("AS KS").unwrap();
+
+        assert!(poker_cards.contains(&CardNumber::ACE_SPADES));
+        assert!(poker_cards.contains(&CardNumber::KING_SPADES));
+        assert!(!poker_cards.contains(&CardNumber::QUEEN_SPADES));
+    }
+
+    #[test]
     fn deal() {
         let mut deck = PokerDeck::poker_cards_shuffled();
         let hand1 = deck.deal(5);
@@ -289,6 +320,18 @@ mod poker_cards_tests {
         assert_eq!(poker_cards.len(), 5);
         assert_eq!("A♠ K♠ __ __ T♠", poker_cards.to_string());
         assert_eq!("A♠ K♠ T♠", poker_cards.filter_blank().to_string());
+    }
+
+    #[test]
+    fn filter_gt_on_rank() {
+        let deck = PokerCards::deck();
+
+        let filtered = deck.filter_eqgt_on_rank(CardRank::KING);
+
+        assert_eq!(filtered.len(), 8);
+        for card in filtered.iter() {
+            println!("{}", card.to_string());
+        }
     }
 
     #[test]

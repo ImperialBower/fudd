@@ -26,6 +26,16 @@ impl CaseEvals {
     }
 
     #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    #[must_use]
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
+
+    #[must_use]
     pub fn winners(&self) -> CaseEval {
         let mut winners = CaseEval::default();
         let winning_rank: HandRank = HandRank::default();

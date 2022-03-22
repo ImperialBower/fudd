@@ -1,6 +1,6 @@
-use crate::types::arrays::two_cards::TwoCards;
+use crate::types::arrays::two_card::TwoCard;
 use crate::types::playing_cards::PlayingCards;
-use crate::types::ranges::two_cards_vec::TwoCardsVec;
+use crate::types::ranges::two_cards::TwoCards;
 use ckc_rs::PokerCard;
 use serde::{Deserialize, Serialize};
 use std::collections::hash_set::Iter;
@@ -13,7 +13,7 @@ use std::collections::HashSet;
 /// TODO: Scenario: A2 T9s HSK S06E03
 #[derive(Serialize, Deserialize, Clone, Debug, Default, Eq, PartialEq)]
 pub struct TwoCardsSet {
-    pub hands: HashSet<TwoCards>,
+    pub hands: HashSet<TwoCard>,
 }
 
 impl TwoCardsSet {
@@ -24,7 +24,7 @@ impl TwoCardsSet {
     }
 
     #[must_use]
-    pub fn contains(&self, cards: &TwoCards) -> bool {
+    pub fn contains(&self, cards: &TwoCard) -> bool {
         self.hands.contains(cards)
     }
 
@@ -40,7 +40,7 @@ impl TwoCardsSet {
     ///
     /// Throws a `HandError::DuplicateCard` error if a `PokerCard` passed in
     /// already exists in the `Range`.
-    pub fn insert(&mut self, cards: TwoCards) -> bool {
+    pub fn insert(&mut self, cards: TwoCard) -> bool {
         if self.contains(&cards) {
             false
         } else {
@@ -54,7 +54,7 @@ impl TwoCardsSet {
     }
 
     #[must_use]
-    pub fn iter(&self) -> Iter<'_, TwoCards> {
+    pub fn iter(&self) -> Iter<'_, TwoCard> {
         self.hands.iter()
     }
 
@@ -70,7 +70,7 @@ impl TwoCardsSet {
             self.hands
                 .intersection(&other.hands)
                 .copied()
-                .collect::<HashSet<TwoCards>>(),
+                .collect::<HashSet<TwoCard>>(),
         )
     }
 
@@ -79,11 +79,11 @@ impl TwoCardsSet {
         TwoCardsSet::from(&self.two_cards_vec().pairs().hands)
     }
 
-    pub fn remove(&mut self, cards: &TwoCards) -> bool {
+    pub fn remove(&mut self, cards: &TwoCard) -> bool {
         self.hands.remove(cards)
     }
 
-    pub fn sample(&mut self) -> Option<TwoCards> {
+    pub fn sample(&mut self) -> Option<TwoCard> {
         let sampled = self.two_cards_vec().sample();
         match sampled {
             Some(s) => {
@@ -123,18 +123,18 @@ impl TwoCardsSet {
 
     /// Returns a sorted vector of the range.
     #[must_use]
-    pub fn two_cards_vec(&self) -> TwoCardsVec {
-        TwoCardsVec::from(self.clone())
+    pub fn two_cards_vec(&self) -> TwoCards {
+        TwoCards::from(self.clone())
     }
 
     #[must_use]
-    pub fn to_vec(&self) -> Vec<TwoCards> {
+    pub fn to_vec(&self) -> Vec<TwoCard> {
         self.hands.clone().into_iter().collect()
     }
 }
 
-impl From<HashSet<TwoCards>> for TwoCardsSet {
-    fn from(hands: HashSet<TwoCards>) -> Self {
+impl From<HashSet<TwoCard>> for TwoCardsSet {
+    fn from(hands: HashSet<TwoCard>) -> Self {
         TwoCardsSet { hands }
     }
 }
@@ -145,23 +145,18 @@ impl From<PlayingCards> for TwoCardsSet {
             return TwoCardsSet::default();
         }
         let mut range = TwoCardsSet::default();
-        for i1 in 0..deck.len() {
-            for i2 in (i1 + 1)..deck.len() {
-                range.insert(
-                    TwoCards::new(
-                        deck.get_index(i1).unwrap().as_u32(),
-                        deck.get_index(i2).unwrap().as_u32(),
-                    )
-                    .unwrap(),
-                );
-            }
+
+        for v in deck.combinations(2) {
+            range.insert(
+                TwoCard::new(v.get(0).unwrap().as_u32(), v.get(1).unwrap().as_u32()).unwrap(),
+            );
         }
         range
     }
 }
 
-impl From<&Vec<TwoCards>> for TwoCardsSet {
-    fn from(hands: &Vec<TwoCards>) -> Self {
+impl From<&Vec<TwoCard>> for TwoCardsSet {
+    fn from(hands: &Vec<TwoCard>) -> Self {
         TwoCardsSet::from(hands.iter().copied().collect::<HashSet<_>>())
     }
 }
@@ -180,9 +175,9 @@ mod types_ranges_two_cards_set_tests {
     fn difference() {
         let mut range1 = TwoCardsSet::default();
         let mut range2 = TwoCardsSet::default();
-        let aces = TwoCards::try_from("AS AC").unwrap();
-        let kings = TwoCards::try_from("KS KC").unwrap();
-        let queens = TwoCards::try_from("QS QC").unwrap();
+        let aces = TwoCard::try_from("AS AC").unwrap();
+        let kings = TwoCard::try_from("KS KC").unwrap();
+        let queens = TwoCard::try_from("QS QC").unwrap();
 
         range1.insert(aces);
         range1.insert(kings);
@@ -193,7 +188,7 @@ mod types_ranges_two_cards_set_tests {
     #[test]
     fn insert() {
         let mut range = TwoCardsSet::default();
-        let two = TwoCards::try_from("AS AC").unwrap();
+        let two = TwoCard::try_from("AS AC").unwrap();
 
         let actual = range.insert(two);
 
@@ -219,8 +214,8 @@ mod types_ranges_two_cards_set_tests {
     #[test]
     fn remove() {
         let mut range = TwoCardsSet::default();
-        let aces = TwoCards::try_from("AS AC").unwrap();
-        let kings = TwoCards::try_from("KS KC").unwrap();
+        let aces = TwoCard::try_from("AS AC").unwrap();
+        let kings = TwoCard::try_from("KS KC").unwrap();
         range.insert(aces);
         range.insert(kings);
 
@@ -274,9 +269,14 @@ mod types_ranges_two_cards_set_tests {
         let range = TwoCardsSet::from(cards);
 
         assert_eq!(range.len(), 6);
-        assert!(range.contains(&TwoCards::try_from("AS KS").unwrap()));
-        assert!(range.contains(&TwoCards::try_from("AS KH").unwrap()));
-        assert!(!range.contains(&TwoCards::try_from("AS JH").unwrap()));
+        assert!(range.contains(&TwoCard::try_from("AS AH").unwrap()));
+        assert!(range.contains(&TwoCard::try_from("AS KS").unwrap()));
+        assert!(range.contains(&TwoCard::try_from("AS KH").unwrap()));
+        assert!(range.contains(&TwoCard::try_from("AS KS").unwrap()));
+        assert!(range.contains(&TwoCard::try_from("AH KS").unwrap()));
+        assert!(range.contains(&TwoCard::try_from("AH KH").unwrap()));
+        assert!(range.contains(&TwoCard::try_from("KS KH").unwrap()));
+        assert!(!range.contains(&TwoCard::try_from("AS JH").unwrap()));
     }
 
     #[test]

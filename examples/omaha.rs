@@ -1,4 +1,4 @@
-use fudd::types::arrays::four_cards::FourCards;
+use fudd::types::arrays::four_card::FourCard;
 use fudd::types::card_slot::CardSlot;
 use fudd::types::poker_deck::PokerDeck;
 use fudd::types::slots::flop::Flop;
@@ -10,12 +10,12 @@ fn main() {
     flop.take_from_poker_cards(&deck.deal(3));
 
     // Deal two Omama hands from the deck.
-    let first_hand = FourCards::try_from(&deck.deal(4)).unwrap();
-    let second_hand = FourCards::try_from(&deck.deal(4)).unwrap();
-    let third_hand = FourCards::try_from(&deck.deal(4)).unwrap();
-    let fourth_hand = FourCards::try_from(&deck.deal(4)).unwrap();
-    let fifth_hand = FourCards::try_from(&deck.deal(4)).unwrap();
-    let sixth_hand = FourCards::try_from(&deck.deal(4)).unwrap();
+    let first_hand = FourCard::try_from(&deck.deal(4)).unwrap();
+    let second_hand = FourCard::try_from(&deck.deal(4)).unwrap();
+    let third_hand = FourCard::try_from(&deck.deal(4)).unwrap();
+    let fourth_hand = FourCard::try_from(&deck.deal(4)).unwrap();
+    let fifth_hand = FourCard::try_from(&deck.deal(4)).unwrap();
+    let sixth_hand = FourCard::try_from(&deck.deal(4)).unwrap();
 
     // What are the outs?
     let first_outs = first_hand.straight_outs_at_flop(&flop);

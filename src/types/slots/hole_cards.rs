@@ -1,4 +1,4 @@
-use crate::types::arrays::two_cards::TwoCards;
+use crate::types::arrays::two_card::TwoCard;
 use crate::types::card_slot::CardSlot;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
@@ -125,8 +125,8 @@ impl From<&'static str> for HoleCards {
     }
 }
 
-impl From<TwoCards> for HoleCards {
-    fn from(two_cards: TwoCards) -> Self {
+impl From<TwoCard> for HoleCards {
+    fn from(two_cards: TwoCard) -> Self {
         HoleCards::new(
             PlayingCard::from(two_cards.first()),
             PlayingCard::from(two_cards.second()),
@@ -269,7 +269,7 @@ mod holdem_hole_cards_tests {
 
     #[test]
     fn from__two_cards() {
-        let two_cards = TwoCards::try_from("AD AS").unwrap();
+        let two_cards = TwoCard::try_from("AD AS").unwrap();
         let expected = HoleCards::from("AS AD");
 
         let actual = HoleCards::from(two_cards);

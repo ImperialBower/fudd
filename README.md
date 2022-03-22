@@ -154,7 +154,13 @@ to my [cardpack.rs](https://github.com/ContractBridge/cardpack.rs) library:
 
 * [cardpack.rs](https://github.com/ContractBridge/cardpack.rs)
 * [ckc-rs](https://github.com/ContractBridge/ckc-rs)
+* [crossbeam](https://github.com/crossbeam-rs/crossbeam)
 * [indexmap](https://github.com/bluss/indexmap)
+* [rayon](https://github.com/rayon-rs/rayon)
+  * [Rayon: data parallelism in Rust](https://smallcultfollowing.com/babysteps/blog/2015/12/18/rayon-data-parallelism-in-rust/)
+  * [Rust Cookbook > Concurrency > Parallel Tasks](https://rust-lang-nursery.github.io/rust-cookbook/concurrency/parallel.html)
+  * [How Rust makes Rayon's data parallelism magical](https://developers.redhat.com/blog/2021/04/30/how-rust-makes-rayons-data-parallelism-magical)
+  * [Parallel stream processing with Rayon](https://morestina.net/blog/1432/parallel-stream-processing-with-rayon)
 * [Serde](https://serde.rs/)
   * [serde_test](https://crates.io/crates/serde_test)
   * [Understanding Rust's serde using macro expansion](https://owengage.com/writing/2021-07-23-serde-expand/)

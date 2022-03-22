@@ -1,4 +1,4 @@
-use crate::types::arrays::five_cards::FiveCards;
+use crate::types::arrays::five_card::FiveCard;
 use crate::types::U32Card;
 use ckc_rs::hand_rank::HandRankName;
 use ckc_rs::{CardRank, CardSuit, PokerCard};
@@ -8,7 +8,7 @@ pub struct UCI;
 impl UCI {
     #[allow(clippy::missing_panics_doc, clippy::needless_pass_by_value)]
     #[must_use]
-    pub fn parse_line(s: String) -> Option<(FiveCards, HandRankName)> {
+    pub fn parse_line(s: String) -> Option<(FiveCard, HandRankName)> {
         let i: Vec<&str> = s.split(',').collect();
         if i.len() < 11 {
             return None;
@@ -33,7 +33,7 @@ impl UCI {
             UCI::get_rank(i.get(9).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(8).unwrap().parse::<usize>().unwrap()),
         );
-        let five = FiveCards::from([first, second, third, forth, fifth]);
+        let five = FiveCard::from([first, second, third, forth, fifth]);
         Some((
             five,
             UCI::get_hand_rank_name(i.get(10).unwrap().parse::<usize>().unwrap()),

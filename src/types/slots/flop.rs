@@ -1,6 +1,6 @@
 use crate::analysis::eval::Eval;
 use crate::analysis::evals::EvalsPerClass;
-use crate::types::arrays::five_cards::FiveCards;
+use crate::types::arrays::five_card::FiveCard;
 use crate::types::card_slot::CardSlot;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
@@ -60,8 +60,8 @@ impl Flop {
         [ha[0], ha[1], fa[0], fa[1], fa[2]]
     }
 
-    pub fn to_poker_hand_add_hole_cards(&self, hole_cards: &HoleCards) -> FiveCards {
-        FiveCards::from(self.to_array_add_hole_cards(hole_cards))
+    pub fn to_poker_hand_add_hole_cards(&self, hole_cards: &HoleCards) -> FiveCard {
+        FiveCard::from(self.to_array_add_hole_cards(hole_cards))
     }
 
     pub fn eval_against_hole_cards(&self, hole_cards: &HoleCards) -> HandRank {

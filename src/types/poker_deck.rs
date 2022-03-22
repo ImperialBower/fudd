@@ -1,8 +1,9 @@
-use crate::types::playing_card::PlayingCard;
 use crate::types::poker_cards::PokerCards;
 use crate::types::U32Card;
 use ckc_rs::CardNumber;
-// use crate::poker_cards_set::PokerCardsSet;
+use itertools::{Combinations, Itertools};
+use rayon::prelude::*;
+use rayon::slice::Iter;
 use std::array::IntoIter;
 
 /// Represents a Standard52 deck as an immutable array of
@@ -76,8 +77,22 @@ impl PokerDeck {
     }
 
     #[must_use]
-    pub fn array_iter(&self) -> IntoIter<U32Card, 52> {
-        self.0.into_iter()
+    pub fn into_par_iter() -> rayon::array::IntoIter<U32Card, 52> {
+        POKER_DECK.0.into_par_iter()
+    }
+
+    #[must_use]
+    pub fn par_iter<'data>() -> Iter<'data, U32Card> {
+        POKER_DECK.0.par_iter()
+    }
+
+    #[must_use]
+    pub fn array_iter() -> IntoIter<U32Card, 52> {
+        POKER_DECK.0.into_iter()
+    }
+
+    pub fn combinations(&self, k: usize) -> Combinations<IntoIter<U32Card, 52>> {
+        self.0.into_iter().combinations(k)
     }
 
     #[must_use]
@@ -86,21 +101,8 @@ impl PokerDeck {
     }
 
     #[must_use]
-    pub fn pile() -> cardpack::Pile {
-        let mut pile = cardpack::Pile::default();
-        for card in PokerDeck::iter() {
-            pile.push(PlayingCard::from(card).as_card());
-        }
-        pile
-    }
-
-    #[must_use]
     pub fn poker_cards() -> PokerCards {
-        let mut cards = PokerCards::default();
-        for card in PokerDeck::iter() {
-            cards.push(*card);
-        }
-        cards
+        PokerCards::from(POKER_DECK.0.to_vec())
     }
 
     #[must_use]
@@ -117,10 +119,9 @@ mod poker_deck_tests {
     use super::*;
 
     #[test]
-    fn pile() {
-        let pile = PokerDeck::pile();
-
-        assert_eq!(pile, cardpack::Pile::french_deck())
+    fn combinations() {
+        assert_eq!(1_326, POKER_DECK.combinations(2).count());
+        assert_eq!(2_598_960, POKER_DECK.combinations(5).count());
     }
 
     #[test]
