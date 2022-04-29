@@ -77,7 +77,7 @@ impl PokerDeck {
     }
 
     #[must_use]
-    pub fn into_par_iter() -> rayon::array::IntoIter<U32Card, 52> {
+    pub fn to_par_iter() -> rayon::array::IntoIter<U32Card, 52> {
         POKER_DECK.0.into_par_iter()
     }
 

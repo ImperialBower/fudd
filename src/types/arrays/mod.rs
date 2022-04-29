@@ -7,6 +7,7 @@ use crate::types::poker_cards::PokerCards;
 use crate::types::U32Card;
 use cardpack::Pile;
 use ckc_rs::hand_rank::HandRank;
+use ckc_rs::CardNumber;
 
 pub mod five_card;
 pub mod four_card;
@@ -41,6 +42,10 @@ pub trait Vectorable {
 
     fn contains(&self, poker_card: &U32Card) -> bool {
         self.to_vec().contains(poker_card)
+    }
+
+    fn is_blank(&self) -> bool {
+        self.contains(&CardNumber::BLANK)
     }
 
     fn rank_count(&self) -> u8 {

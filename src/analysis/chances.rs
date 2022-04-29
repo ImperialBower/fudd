@@ -59,7 +59,9 @@ impl Chances {
         for k in self.keys() {
             let player_outs = outs.get_unless_most(*k);
             match player_outs {
-                Some(o) => println!("Seat {}: {:.1}% - Outs: {}", k, self.get(*k), o),
+                Some(o) => {
+                    println!("Seat {}: {:.1}% - Outs: {}", k, self.get(*k), o);
+                }
                 None => println!("Seat {}: {:.1}%", k, self.get(*k)),
             };
         }

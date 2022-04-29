@@ -56,7 +56,7 @@ impl Seats {
     /// the best combination for player 1 would be a pair of aces with `A♥ A♦ T♦ 8♥ 7♥`, while
     /// the best combination for player 2 would be three aces with `A♠ A♥ A♦ T♦ 6♠`.
     ///
-    /// TODO: This can be tighted up to just accept a `PokerHand`.
+    /// TODO: This can be tightened up to just accept a `PokerHand`.
     ///
     /// # Panics
     ///

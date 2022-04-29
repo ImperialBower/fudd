@@ -7,8 +7,8 @@ pub mod evals_7card;
 pub mod holdem_playout;
 pub mod indexed;
 pub mod outs;
-pub mod preflop;
 pub mod seat_calc;
+pub mod store;
 
 use crate::types::arrays::five_card::FiveCard;
 use crate::types::arrays::Evaluable;
@@ -16,6 +16,15 @@ use crate::types::poker_deck::POKER_DECK;
 use ckc_rs::hand_rank::{HandRank, HandRankClass, HandRankName};
 use log::debug;
 use std::collections::HashMap;
+use strum_macros::Display;
+use strum_macros::EnumIter;
+
+#[derive(Clone, Copy, Debug, Display, EnumIter, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum HeadsUpResult {
+    FirstWins,
+    SecondWins,
+    Tie,
+}
 
 pub struct Evaluate;
 
