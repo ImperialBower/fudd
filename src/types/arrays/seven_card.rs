@@ -7,8 +7,11 @@ use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
 use crate::types::U32Card;
+use ckc_rs::cards::seven::Seven;
 use ckc_rs::{CardNumber, HandError, PokerCard};
+use core::fmt;
 use serde::{Deserialize, Serialize};
+use std::fmt::Formatter;
 
 #[derive(
     Serialize, Deserialize, Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd,
@@ -67,8 +70,31 @@ impl SevenCard {
     //endregion
 
     #[must_use]
+    pub fn sort(&self) -> SevenCard {
+        let mut c = *self;
+        c.sort_in_place();
+        c
+    }
+
+    pub fn sort_in_place(&mut self) {
+        self.0.sort_unstable();
+        self.0.reverse();
+    }
+
+    #[must_use]
     pub fn to_arr(&self) -> [U32Card; 7] {
         self.0
+    }
+
+    #[must_use]
+    pub fn to_seven(&self) -> Seven {
+        Seven::from(self.to_arr())
+    }
+}
+
+impl fmt::Display for SevenCard {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", PlayingCards::from(&self.to_vec()))
     }
 }
 
@@ -206,6 +232,14 @@ impl TryFrom<&'static str> for SevenCard {
     }
 }
 
+impl TryFrom<Vec<&PlayingCard>> for SevenCard {
+    type Error = HandError;
+
+    fn try_from(v: Vec<&PlayingCard>) -> Result<Self, Self::Error> {
+        SevenCard::try_from(&PlayingCards::from(v))
+    }
+}
+
 impl Vectorable for SevenCard {
     #[must_use]
     fn to_vec(&self) -> Vec<U32Card> {
@@ -219,6 +253,29 @@ mod types_arrays_seven_card_tests {
     use super::*;
     use ckc_rs::hand_rank::HandRank;
     use ckc_rs::CardNumber;
+
+    #[test]
+    fn sort() {
+        let seven = SevenCard::try_from("9H AS KS QS JS TS 2H").unwrap().sort();
+
+        assert_eq!("A♠ K♠ Q♠ J♠ T♠ 9♥ 2♥", seven.to_string());
+    }
+
+    #[test]
+    fn sort_in_place() {
+        let mut seven = SevenCard::try_from("9H AS KS QS JS TS 2H").unwrap();
+
+        seven.sort_in_place();
+
+        assert_eq!("A♠ K♠ Q♠ J♠ T♠ 9♥ 2♥", seven.to_string());
+    }
+
+    #[test]
+    fn display() {
+        let playing_cards = SevenCard::try_from("9H AS KS QS JS TS 2H").unwrap();
+
+        assert_eq!("9♥ A♠ K♠ Q♠ J♠ T♠ 2♥", playing_cards.to_string());
+    }
 
     #[test]
     fn from__array() {
@@ -296,5 +353,22 @@ mod types_arrays_seven_card_tests {
         assert_eq!(*poker_cards.get(4).unwrap(), a.fifth());
         assert_eq!(*poker_cards.get(5).unwrap(), a.sixth());
         assert_eq!(*poker_cards.get(6).unwrap(), a.seventh());
+    }
+
+    #[test]
+    fn try_from__vec_playing_card() {
+        let v = vec![
+            &PlayingCard::ACE_SPADES,
+            &PlayingCard::KING_SPADES,
+            &PlayingCard::QUEEN_SPADES,
+            &PlayingCard::JACK_SPADES,
+            &PlayingCard::TEN_SPADES,
+            &PlayingCard::NINE_SPADES,
+            &PlayingCard::EIGHT_SPADES,
+        ];
+
+        let seven = SevenCard::try_from(v).unwrap();
+
+        assert_eq!("A♠ K♠ Q♠ J♠ T♠ 9♠ 8♠", seven.to_string())
     }
 }

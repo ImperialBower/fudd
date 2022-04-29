@@ -130,6 +130,9 @@ to my [cardpack.rs](https://github.com/ContractBridge/cardpack.rs) library:
     * [manuelbucher/distributed-cards](https://gitlab.com/manuelbucher/distributed-cards) - [crate](https://crates.io/crates/distributed-cards) Implements the mental poker shuffling algorithm
     * [lucasholder/fair](https://github.com/lucasholder/fair) - [crate](https://crates.io/crates/fair) CLI tool and library for verifying provably fair games (baccarat, etc.).
     * [davefol/Poker-Range-Trainer](https://github.com/davefol/Poker-Range-Trainer)
+    * Heads Up
+      * [Poker odds pre-flop heads-up](https://tools.timodenk.com/poker-odds-pre-flop)
+        * [JS Source](https://github.com/Simsso/Online-Tools/blob/master/src/page/logic/poker-odds-pre-flop.js)
 * Articles
   * [How to Compute the Probability of Equal-Rank Cards in Stud Poker](https://stattrek.com/poker/probability-of-equal-rank-cards.aspx)
   * [Interactive Mathematics Miscellany and Puzzles](https://www.cut-the-knot.org/) > [Probabilities](https://www.cut-the-knot.org/probability.shtml) > [Example: A Poker Hand](https://www.cut-the-knot.org/Probability/PokerSampleSpaces.shtml)
@@ -155,6 +158,8 @@ to my [cardpack.rs](https://github.com/ContractBridge/cardpack.rs) library:
 * [cardpack.rs](https://github.com/ContractBridge/cardpack.rs)
 * [ckc-rs](https://github.com/ContractBridge/ckc-rs)
 * [crossbeam](https://github.com/crossbeam-rs/crossbeam)
+* [rust-csv](https://github.com/BurntSushi/rust-csv)
+  * [Tutorial](https://docs.rs/csv/latest/csv/tutorial/index.html)
 * [indexmap](https://github.com/bluss/indexmap)
 * [rayon](https://github.com/rayon-rs/rayon)
   * [Rayon: data parallelism in Rust](https://smallcultfollowing.com/babysteps/blog/2015/12/18/rayon-data-parallelism-in-rust/)

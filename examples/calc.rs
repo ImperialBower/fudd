@@ -47,6 +47,11 @@ struct Args {
 // cargo run --example calc -- -d "T♦ 9♦ 2♠ 2♥" -b "2♦ T♥ 7♦ 8♦ 6♥" DNEGS https://youtu.be/yyPU25EGLkA?t=123
 // cargo run --example calc -- -d "A♦ Q♠ K♣ Q♦" -b "J♥ 9♠ A♣ 4♦ T♣" HSP S09E03 DNEGS/Bellands
 // cargo run --example calc -- -d "J♥ 8♠ K♠ J♠ 3♠ 3♥" -b "7♥ 8♦ 2♣ 5♣ Q♠" HSP S09E04 Adelstein/Liu/Antonius
+// cargo run --example calc -- -d "A♥ 8♦ K♣ 7♣ T♥ T♦" -b "4♠ K♦ 2♦ J♥ 3♠" HSP S09E05 Brunson/Tilly/Antonius
+// cargo run --example calc -- -d "J♥ J♣ A♥ 4♥" -b "3♣ 4♠ 4♣ 7♣ A♣" HSP S09E05 Adelstein/Brunson 1st
+// cargo run --example calc -- -d "J♥ J♣ A♥ 4♥" -b "3♣ 4♠ 4♣ 7♣ 9♠" HSP S09E05 Adelstein/Brunson 2nd
+// cargo run --example calc -- -d "8♦ 5♦ K♦ J♥ 2♠ 2♥" -b "9♥ 2♦ K♥ 4♥ J♠" HSP S09E05 Tilly/Hultman
+// cargo run --example calc -- -d "J♥ J♦ A♠ K♦ T♣ 9♣" -b "7♦ K♠ 2♥ 7♣ A♦" HSP S09E05 Liu/Tilly/Menon
 //
 fn main() {
     let start = Instant::now();

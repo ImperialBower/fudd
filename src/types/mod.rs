@@ -1,12 +1,13 @@
 pub mod arrays;
 pub mod bitvec;
 pub mod card_slot;
+pub mod hands;
 pub mod playing_card;
 pub mod playing_cards;
 pub mod poker_cards;
 pub mod poker_deck;
 pub mod ranges;
-mod sample;
+pub mod sample;
 pub mod slots;
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
@@ -28,3 +29,7 @@ pub mod slots;
 /// b = bit turned on depending on rank of card
 /// ```
 pub type U32Card = u32;
+
+pub trait PileOfCards<T> {
+    fn has(&self, i: T) -> bool;
+}

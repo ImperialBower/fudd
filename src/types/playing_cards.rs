@@ -224,11 +224,6 @@ impl PlayingCards {
     #[allow(clippy::missing_panics_doc)]
     pub fn to_seven_array(&self) -> Result<SevenCard, HandError> {
         SevenCard::try_from(self)
-        // match self.len() {
-        //     0..=6 => Err(HandError::NotEnoughCards),
-        //     7 => Ok(SevenCards::try_from()),
-        //     _ => Err(HandError::TooManyCards),
-        // }
     }
 
     #[must_use]

@@ -6,6 +6,7 @@ use crate::types::arrays::three_card::ThreeCard;
 use crate::types::arrays::two_card::TwoCard;
 use crate::types::arrays::{Evaluable, Vectorable};
 use crate::types::playing_card::PlayingCard;
+use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
 use crate::types::U32Card;
 use cardpack::Pile;
@@ -68,6 +69,11 @@ impl FiveCard {
     #[must_use]
     pub fn to_arr(&self) -> [U32Card; 5] {
         self.0
+    }
+
+    #[must_use]
+    pub fn to_five(&self) -> Five {
+        Five::from(self.to_arr())
     }
 }
 
@@ -154,6 +160,14 @@ impl TryFrom<cardpack::Pile> for FiveCard {
 
     fn try_from(pile: Pile) -> Result<Self, Self::Error> {
         FiveCard::try_from(&PokerCards::from(pile))
+    }
+}
+
+impl TryFrom<&PlayingCards> for FiveCard {
+    type Error = HandError;
+
+    fn try_from(playing_cards: &PlayingCards) -> Result<Self, Self::Error> {
+        FiveCard::try_from(&PokerCards::from(playing_cards))
     }
 }
 
@@ -249,6 +263,14 @@ impl TryFrom<Vec<U32Card>> for FiveCard {
             }
             _ => Err(HandError::TooManyCards),
         }
+    }
+}
+
+impl TryFrom<Vec<&PlayingCard>> for FiveCard {
+    type Error = HandError;
+
+    fn try_from(v: Vec<&PlayingCard>) -> Result<Self, Self::Error> {
+        FiveCard::try_from(&PlayingCards::from(v))
     }
 }
 
