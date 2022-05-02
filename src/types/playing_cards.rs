@@ -2,13 +2,13 @@ use crate::analysis::eval::Eval;
 use crate::types::arrays::five_card::FiveCard;
 use crate::types::arrays::seven_card::SevenCard;
 use crate::types::arrays::two_card::TwoCard;
-use crate::types::arrays::Evaluable;
+use crate::types::arrays::{Evaluable, Vectorable};
 use crate::types::playing_card::PlayingCard;
 use crate::types::poker_cards::PokerCards;
 use crate::types::poker_deck::PokerDeck;
 use crate::types::U32Card;
 use crate::util::random_ordering::RandomOrdering;
-use cardpack::{Pile, Standard52};
+use cardpack::Pile;
 use ckc_rs::{HandError, PokerCard};
 use core::fmt;
 use indexmap::set::Iter;
@@ -329,10 +329,16 @@ impl TryFrom<&'static str> for PlayingCards {
     /// Will return `CardError::InvalidCard` for an invalid index.
     #[allow(clippy::missing_panics_doc)]
     fn try_from(value: &'static str) -> Result<Self, Self::Error> {
-        match Standard52::pile_from_index(value) {
-            Ok(pile) => Ok(PlayingCards::from(&pile)),
-            Err(_) => Err(HandError::InvalidCard),
+        let mut cards = PlayingCards::default();
+
+        for s in value.split_whitespace() {
+            let card = PlayingCard::from(s);
+            if card.is_blank() {
+                return Err(HandError::InvalidCard);
+            }
+            cards.insert(card);
         }
+        Ok(cards)
     }
 }
 
