@@ -21,8 +21,8 @@ pub struct HeadsUp {
 }
 
 impl HeadsUp {
-    const PREFLOP_COMBO_COUNT: usize = 1_712_304;
-    const DEFAULT_WORKER_COUNT: usize = 10;
+    pub const PREFLOP_COMBO_COUNT: usize = 1_712_304;
+    pub const DEFAULT_WORKER_COUNT: usize = 10;
 
     #[must_use]
     pub fn new(first: Hand, second: Hand) -> HeadsUp {

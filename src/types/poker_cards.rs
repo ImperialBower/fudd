@@ -1,9 +1,11 @@
+use crate::types::arrays::Vectorable;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_deck::PokerDeck;
 use crate::types::U32Card;
 use cardpack::{Pile, Standard52};
-use ckc_rs::{CardNumber, CardRank, HandError, PokerCard};
+use ckc_rs::cards::two::Two;
+use ckc_rs::{CKCNumber, CardNumber, CardRank, HandError, PokerCard};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use std::fmt;
@@ -17,6 +19,53 @@ impl PokerCards {
     #[must_use]
     pub fn deck() -> PokerCards {
         PokerDeck::poker_cards()
+    }
+
+    /// # Errors
+    ///
+    /// Will return `CardError::InvalidCard` for an invalid index.
+    #[must_use]
+    pub fn from_index(index: &'static str) -> Result<PokerCards, HandError> {
+        let mut cards = PokerCards::default();
+
+        for s in index.split_whitespace() {
+            let card = CKCNumber::from_index(s);
+            if card.is_blank() {
+                return Err(HandError::InvalidCard);
+            }
+            cards.push(card);
+        }
+        Ok(cards)
+    }
+
+    /// # Errors
+    ///
+    /// Will return `CardError::InvalidCard` for an invalid index.
+    #[must_use]
+    #[allow(clippy::needless_pass_by_value)]
+    pub fn from_index_string(index: String) -> Result<PokerCards, HandError> {
+        let mut cards = PokerCards::default();
+
+        for s in index.split_whitespace() {
+            let card = CKCNumber::from_index(s);
+            if card.is_blank() {
+                return Err(HandError::InvalidCard);
+            }
+            cards.push(card);
+        }
+        Ok(cards)
+    }
+
+    /// Appends a clone of the passed in collection of `PokerCards` to the existing one.
+    pub fn append(&mut self, other: &PokerCards) {
+        self.0.append(&mut other.0.clone());
+    }
+
+    #[must_use]
+    pub fn combine(self, other: &PokerCards) -> PokerCards {
+        let mut r = self;
+        r.append(&other.filter_blank());
+        r
     }
 
     #[must_use]
@@ -64,6 +113,11 @@ impl PokerCards {
     }
 
     #[must_use]
+    pub fn divisible_by(&self, x: usize) -> bool {
+        (self.len() % x) == 0
+    }
+
+    #[must_use]
     pub fn filter_blank(&self) -> PokerCards {
         PokerCards::from(
             self.0
@@ -90,27 +144,6 @@ impl PokerCards {
         self.0.get(index)
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &U32Card> {
-        self.0.iter()
-    }
-
-    #[must_use]
-    pub fn to_vec(&self) -> Vec<U32Card> {
-        self.0.clone()
-    }
-
-    /// Appends a clone of the passed in collection of `PokerCards` to the existing one.
-    pub fn append(&mut self, other: &PokerCards) {
-        self.0.append(&mut other.0.clone());
-    }
-
-    #[must_use]
-    pub fn combine(self, other: &PokerCards) -> PokerCards {
-        let mut r = self;
-        r.append(&other.filter_blank());
-        r
-    }
-
     #[must_use]
     pub fn is_complete_hand(&self) -> bool {
         self.len() == 5
@@ -119,6 +152,15 @@ impl PokerCards {
     #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
+    }
+
+    #[must_use]
+    pub fn is_valid(&self) -> bool {
+        self.len() == PlayingCards::from(self).len()
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &U32Card> {
+        self.0.iter()
     }
 
     #[must_use]
@@ -141,6 +183,9 @@ impl PokerCards {
     }
 
     pub fn pull(&mut self) -> U32Card {
+        if self.is_empty() {
+            return CardNumber::BLANK;
+        }
         self.0.remove(0)
     }
 
@@ -183,6 +228,26 @@ impl PokerCards {
         }
 
         pile
+    }
+
+    /// # Errors
+    ///
+    /// Will return `CardError::InvalidCardCount` for an invalid index.
+    #[must_use]
+    pub fn try_into_twos(&self) -> Result<Vec<Two>, HandError> {
+        if !self.divisible_by(2) {
+            return Err(HandError::InvalidCardCount);
+        }
+        let mut v: Vec<Two> = Vec::new();
+        let mut cards = self.clone();
+        loop {
+            let c1 = cards.pull();
+            if c1.is_blank() {
+                break;
+            }
+            v.push(Two::new(c1, cards.pull()));
+        }
+        Ok(v)
     }
 }
 
@@ -228,17 +293,26 @@ impl TryFrom<&'static str> for PokerCards {
     /// Will return `CardError::InvalidCard` for an invalid index.
     #[allow(clippy::missing_panics_doc)]
     fn try_from(value: &'static str) -> Result<Self, Self::Error> {
-        let pile = Standard52::pile_from_index(value);
+        PokerCards::from_index(value)
+    }
+}
 
-        if pile.is_err() {
-            return Err(HandError::InvalidCard);
-        }
+impl TryFrom<String> for PokerCards {
+    type Error = HandError;
 
-        let mut cards = PokerCards::default();
-        for card in pile.unwrap() {
-            cards.push(PlayingCard::from(&card).as_u32());
-        }
-        Ok(cards)
+    /// # Errors
+    ///
+    /// Will return `CardError::InvalidCard` for an invalid index.
+    #[allow(clippy::missing_panics_doc)]
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        PokerCards::from_index_string(value)
+    }
+}
+
+impl Vectorable for PokerCards {
+    #[must_use]
+    fn to_vec(&self) -> Vec<U32Card> {
+        self.0.clone()
     }
 }
 
@@ -247,6 +321,35 @@ impl TryFrom<&'static str> for PokerCards {
 mod poker_cards_tests {
     use super::*;
     use crate::types::poker_deck::PokerDeck;
+
+    #[test]
+    fn append() {
+        let standard52 = &mut Standard52::new_shuffled();
+        let hole_cards = PokerCards::deal_from_standard52(standard52, 2);
+        let flop = PokerCards::deal_from_standard52(standard52, 3);
+
+        let mut five_cards = hole_cards.clone();
+        five_cards.append(&flop);
+
+        assert_eq!(
+            format!("{}", five_cards),
+            format!("{} {}", hole_cards, flop)
+        );
+    }
+
+    #[test]
+    fn combine() {
+        let standard52 = &mut Standard52::new_shuffled();
+        let hole_cards = PokerCards::deal_from_standard52(standard52, 2);
+        let flop = PokerCards::deal_from_standard52(standard52, 3);
+
+        let five_cards = hole_cards.clone().combine(&flop);
+
+        assert_eq!(
+            format!("{}", five_cards),
+            format!("{} {}", hole_cards, flop)
+        );
+    }
 
     #[test]
     fn contains() {
@@ -279,35 +382,6 @@ mod poker_cards_tests {
         assert_eq!(hand1.len(), 25);
         assert_eq!(hand2.len(), 25);
         assert!(hand3.is_empty());
-    }
-
-    #[test]
-    fn append() {
-        let standard52 = &mut Standard52::new_shuffled();
-        let hole_cards = PokerCards::deal_from_standard52(standard52, 2);
-        let flop = PokerCards::deal_from_standard52(standard52, 3);
-
-        let mut five_cards = hole_cards.clone();
-        five_cards.append(&flop);
-
-        assert_eq!(
-            format!("{}", five_cards),
-            format!("{} {}", hole_cards, flop)
-        );
-    }
-
-    #[test]
-    fn combine() {
-        let standard52 = &mut Standard52::new_shuffled();
-        let hole_cards = PokerCards::deal_from_standard52(standard52, 2);
-        let flop = PokerCards::deal_from_standard52(standard52, 3);
-
-        let five_cards = hole_cards.clone().combine(&flop);
-
-        assert_eq!(
-            format!("{}", five_cards),
-            format!("{} {}", hole_cards, flop)
-        );
     }
 
     #[test]
@@ -366,6 +440,14 @@ mod poker_cards_tests {
     }
 
     #[test]
+    fn is_valid() {
+        assert!(PokerCards::try_from("  A♠ Q♠   J♠    T♠ ")
+            .unwrap()
+            .is_valid());
+        assert!(!PokerCards::try_from("A♠ A♠ Q♠ J♠ T♠").unwrap().is_valid());
+    }
+
+    #[test]
     fn pop() {
         let mut hand = PokerCards::try_from("A♠ A♠ Q♠ J♠ T♠").unwrap();
 
@@ -394,5 +476,44 @@ mod poker_cards_tests {
         let hand = PokerCards::try_from("KC AD KH KD AS").unwrap();
         let sorted = hand.sort();
         println!("{}", sorted);
+    }
+
+    #[test]
+    fn try_into_twos() {
+        let two = vec![
+            Two::try_from("J♠ T♠").unwrap(),
+            Two::try_from("A♠ K♠").unwrap(),
+        ];
+
+        let cards = PokerCards::try_from("JS TS AS KS")
+            .unwrap()
+            .try_into_twos()
+            .unwrap();
+
+        assert_eq!(two, cards);
+    }
+
+    #[test]
+    fn try_into_twos__not_divisible_into_two() {
+        let cards = PokerCards::try_from("KC AD KH KD AS")
+            .unwrap()
+            .try_into_twos();
+
+        assert!(cards.is_err());
+    }
+
+    #[test]
+    fn try_from__index_str() {
+        assert_eq!(
+            "K♣ A♦ K♥ K♦ A♠",
+            PokerCards::try_from("KC AD KH KD AS").unwrap().to_string()
+        );
+    }
+
+    #[test]
+    fn try_from__index_str__invalid() {
+        let cards = PokerCards::try_from("KX AD KH KD AS");
+        assert!(cards.is_err());
+        assert_eq!(HandError::InvalidCard, cards.unwrap_err());
     }
 }

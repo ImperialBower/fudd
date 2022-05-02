@@ -1,3 +1,4 @@
+use crate::types::arrays::Vectorable;
 use crate::types::bitvec::bit_card::BitCard;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;

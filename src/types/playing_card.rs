@@ -1,7 +1,7 @@
 use crate::types::bitvec::bit_card::BitCard;
 use crate::types::U32Card;
 use bitvec::field::BitField;
-use ckc_rs::{CardNumber, PokerCard};
+use ckc_rs::{CKCNumber, CardNumber, PokerCard};
 use serde::de::Deserializer;
 use serde::ser::{Serialize, Serializer};
 use serde::Deserialize;
@@ -122,7 +122,7 @@ impl From<&'static u32> for PlayingCard {
 
 impl From<&'static str> for PlayingCard {
     fn from(value: &'static str) -> PlayingCard {
-        PlayingCard::from(&cardpack::Standard52::card_from_index(value))
+        PlayingCard(CKCNumber::from_index(value))
     }
 }
 
