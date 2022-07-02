@@ -1,14 +1,13 @@
 use crate::types::bitvec::bit_card::BitCard;
-use crate::types::U32Card;
 use bitvec::field::BitField;
-use ckc_rs::{CKCNumber, CardNumber, PokerCard};
+use ckc_rs::{CKCNumber, CardNumber, PokerCard, Shifty};
 use serde::de::Deserializer;
 use serde::ser::{Serialize, Serializer};
 use serde::Deserialize;
 use std::fmt;
 
 #[derive(Deserialize, Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct PlayingCard(#[serde(deserialize_with = "deserialize_card_index")] U32Card);
+pub struct PlayingCard(#[serde(deserialize_with = "deserialize_card_index")] CKCNumber);
 
 impl PlayingCard {
     //region cards
@@ -79,7 +78,7 @@ impl PlayingCard {
     }
 }
 
-impl ckc_rs::PokerCard for PlayingCard {
+impl PokerCard for PlayingCard {
     fn as_u32(&self) -> u32 {
         self.0
     }
@@ -129,8 +128,8 @@ impl From<&'static str> for PlayingCard {
 /// Sieve to ensure that only valid binary card representations are passed in.
 ///
 /// Invalid `CardNumbers` will return a `Blank` `PlayingCard`.
-impl From<U32Card> for PlayingCard {
-    fn from(value: U32Card) -> Self {
+impl From<CKCNumber> for PlayingCard {
+    fn from(value: CKCNumber) -> Self {
         PlayingCard(ckc_rs::CardNumber::filter(value))
     }
 }
@@ -150,12 +149,18 @@ impl Serialize for PlayingCard {
     }
 }
 
-fn deserialize_card_index<'de, D>(deserializer: D) -> Result<U32Card, D::Error>
+fn deserialize_card_index<'de, D>(deserializer: D) -> Result<CKCNumber, D::Error>
 where
     D: Deserializer<'de>,
 {
     let buf = String::deserialize(deserializer)?;
     Ok(PlayingCard::from(buf).as_u32())
+}
+
+impl Shifty for PlayingCard {
+    fn shift_suit(&self) -> Self {
+        PlayingCard(self.as_u32().shift_suit())
+    }
 }
 
 #[cfg(test)]
@@ -254,6 +259,14 @@ mod holdem_playing_card_tests {
             assert_eq!(PokerDeck::get(i), playing_card.as_u32());
             assert_eq!(playing_card.as_card(), card);
         }
+    }
+
+    #[test]
+    fn shifty() {
+        assert_eq!(
+            PlayingCard::from("QH"),
+            PlayingCard::from("QS").shift_suit()
+        )
     }
 
     // https://serde.rs/unit-testing.html

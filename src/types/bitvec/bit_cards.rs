@@ -3,14 +3,13 @@ use crate::types::bitvec::bit_card::BitCard;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
-use crate::types::U32Card;
 use bitvec::field::BitField;
 use bitvec::prelude::{BitVec, Msb0};
-use ckc_rs::HandError;
+use ckc_rs::{CKCNumber, HandError};
 use std::fmt::{Display, Formatter};
 use wyz::FmtForward;
 
-#[derive(Clone, Debug, Default, Hash, PartialEq)]
+#[derive(Clone, Debug, Default, Hash, Eq, PartialEq)]
 pub struct BitCards(Vec<BitCard>);
 
 impl BitCards {
@@ -127,7 +126,7 @@ impl BitCards {
 
     #[must_use]
     pub fn to_poker_cards(&self) -> PokerCards {
-        let v: Vec<U32Card> = self.0.iter().map(BitCard::to_poker_card).collect();
+        let v: Vec<CKCNumber> = self.0.iter().map(BitCard::to_poker_card).collect();
         PokerCards::from(v)
     }
 }
@@ -154,8 +153,8 @@ impl From<Vec<BitCard>> for BitCards {
     }
 }
 
-impl From<Vec<U32Card>> for BitCards {
-    fn from(vec: Vec<U32Card>) -> Self {
+impl From<Vec<CKCNumber>> for BitCards {
+    fn from(vec: Vec<CKCNumber>) -> Self {
         BitCards(vec.into_iter().map(BitCard::from).collect())
     }
 }
@@ -222,7 +221,6 @@ impl TryFrom<&'static str> for BitCards {
 #[allow(non_snake_case)]
 mod bit_cards_tests {
     use super::*;
-    use crate::types::U32Card;
     use ckc_rs::CardNumber;
 
     #[test]
@@ -328,11 +326,23 @@ mod bit_cards_tests {
         assert_eq!(format!("{}", cards), expected);
     }
 
-    fn shift_16(c1: &U32Card, c2: &U32Card, c3: &U32Card, c4: &U32Card, c5: &U32Card) -> usize {
+    fn shift_16(
+        c1: &CKCNumber,
+        c2: &CKCNumber,
+        c3: &CKCNumber,
+        c4: &CKCNumber,
+        c5: &CKCNumber,
+    ) -> usize {
         ((c1 | c2 | c3 | c4 | c5) as usize) >> 16
     }
 
-    fn flush_hunt(c1: &U32Card, c2: &U32Card, c3: &U32Card, c4: &U32Card, c5: &U32Card) -> bool {
+    fn flush_hunt(
+        c1: &CKCNumber,
+        c2: &CKCNumber,
+        c3: &CKCNumber,
+        c4: &CKCNumber,
+        c5: &CKCNumber,
+    ) -> bool {
         (c1 & c2 & c3 & c4 & c5 & CardNumber::SUIT_FILTER) != 0
     }
 
@@ -341,11 +351,11 @@ mod bit_cards_tests {
     fn hand_rank() {
         let cards = BitCards::try_from("AS KS QS JS TS").unwrap();
 
-        let c1: &U32Card = &cards.get(0).unwrap().to_poker_card();
-        let c2: &U32Card = &cards.get(1).unwrap().to_poker_card();
-        let c3: &U32Card = &cards.get(2).unwrap().to_poker_card();
-        let c4: &U32Card = &cards.get(3).unwrap().to_poker_card();
-        let c5: &U32Card = &cards.get(4).unwrap().to_poker_card();
+        let c1: &CKCNumber = &cards.get(0).unwrap().to_poker_card();
+        let c2: &CKCNumber = &cards.get(1).unwrap().to_poker_card();
+        let c3: &CKCNumber = &cards.get(2).unwrap().to_poker_card();
+        let c4: &CKCNumber = &cards.get(3).unwrap().to_poker_card();
+        let c5: &CKCNumber = &cards.get(4).unwrap().to_poker_card();
 
         let q = shift_16(c1, c2, c3, c4, c5);
         let q2 = cards.or_to_usize() >> 16;

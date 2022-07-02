@@ -2,14 +2,13 @@ use crate::types::arrays::two_card::TwoCard;
 use crate::types::card_slot::CardSlot;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
-use crate::types::U32Card;
-use ckc_rs::PokerCard;
+use ckc_rs::{CKCNumber, PokerCard};
 use log::warn;
 use serde::{Deserialize, Serialize};
 use std::cell::Cell;
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
 pub struct HoleCards(Cell<PlayingCard>, Cell<PlayingCard>);
 
 impl HoleCards {
@@ -63,7 +62,7 @@ impl HoleCards {
         )
     }
 
-    pub fn to_array(&self) -> [U32Card; 2] {
+    pub fn to_array(&self) -> [CKCNumber; 2] {
         [
             self.get_first_card().as_u32(),
             self.get_second_card().as_u32(),

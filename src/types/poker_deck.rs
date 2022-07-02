@@ -1,6 +1,5 @@
 use crate::types::poker_cards::PokerCards;
-use crate::types::U32Card;
-use ckc_rs::CardNumber;
+use ckc_rs::{CKCNumber, CardNumber};
 use itertools::{Combinations, Itertools};
 use rayon::prelude::*;
 use rayon::slice::Iter;
@@ -9,7 +8,7 @@ use std::array::IntoIter;
 /// Represents a Standard52 deck as an immutable array of
 /// Cactus Kev Cards (`PokerCard`).
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct PokerDeck([U32Card; 52]);
+pub struct PokerDeck([CKCNumber; 52]);
 
 pub const POKER_DECK: PokerDeck = PokerDeck([
     CardNumber::ACE_SPADES,
@@ -68,30 +67,30 @@ pub const POKER_DECK: PokerDeck = PokerDeck([
 
 impl PokerDeck {
     #[must_use]
-    pub fn get(index: usize) -> U32Card {
+    pub fn get(index: usize) -> CKCNumber {
         POKER_DECK.0[index]
     }
 
-    pub fn iter() -> impl Iterator<Item = &'static U32Card> {
+    pub fn iter() -> impl Iterator<Item = &'static CKCNumber> {
         POKER_DECK.0.iter()
     }
 
     #[must_use]
-    pub fn to_par_iter() -> rayon::array::IntoIter<U32Card, 52> {
+    pub fn to_par_iter() -> rayon::array::IntoIter<CKCNumber, 52> {
         POKER_DECK.0.into_par_iter()
     }
 
     #[must_use]
-    pub fn par_iter<'data>() -> Iter<'data, U32Card> {
+    pub fn par_iter<'data>() -> Iter<'data, CKCNumber> {
         POKER_DECK.0.par_iter()
     }
 
     #[must_use]
-    pub fn array_iter() -> IntoIter<U32Card, 52> {
+    pub fn array_iter() -> IntoIter<CKCNumber, 52> {
         POKER_DECK.0.into_iter()
     }
 
-    pub fn combinations(&self, k: usize) -> Combinations<IntoIter<U32Card, 52>> {
+    pub fn combinations(&self, k: usize) -> Combinations<IntoIter<CKCNumber, 52>> {
         self.0.into_iter().combinations(k)
     }
 

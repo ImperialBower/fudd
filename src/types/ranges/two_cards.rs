@@ -3,7 +3,7 @@ use crate::types::arrays::Vectorable;
 use crate::types::poker_deck::POKER_DECK;
 use crate::types::ranges::two_cards_set::TwoCardsSet;
 use crate::types::sample::Sample;
-use crate::types::U32Card;
+use ckc_rs::CKCNumber;
 use serde::{Deserialize, Serialize};
 use std::slice::Iter;
 
@@ -97,8 +97,8 @@ impl TwoCards {
     }
 }
 
-impl From<Vec<[U32Card; 2]>> for TwoCards {
-    fn from(raw: Vec<[U32Card; 2]>) -> Self {
+impl From<Vec<[CKCNumber; 2]>> for TwoCards {
+    fn from(raw: Vec<[CKCNumber; 2]>) -> Self {
         TwoCards::from(raw.iter().map(TwoCard::from).collect::<Vec<TwoCard>>())
     }
 }
@@ -118,7 +118,7 @@ impl From<TwoCardsSet> for TwoCards {
 }
 
 impl Vectorable for TwoCards {
-    fn to_vec(&self) -> Vec<U32Card> {
+    fn to_vec(&self) -> Vec<CKCNumber> {
         self.hands
             .iter()
             .flat_map(|x| x.iter().map(Clone::clone))
@@ -126,7 +126,7 @@ impl Vectorable for TwoCards {
     }
 }
 
-pub const POCKET_PAIRS: [[U32Card; 2]; 13] = [
+pub const POCKET_PAIRS: [[CKCNumber; 2]; 13] = [
     TwoCard::POCKET_ROCKETS,
     TwoCard::COWBOYS,
     TwoCard::LADIES,
@@ -158,7 +158,7 @@ mod types_ranges_two_cards_vec_tests {
     fn to_vec() {
         let v = TwoCards::from(vec![TwoCard::POCKET_ROCKETS, TwoCard::COWBOYS]);
 
-        let expected: Vec<U32Card> = vec![
+        let expected: Vec<CKCNumber> = vec![
             CardNumber::ACE_DIAMONDS,
             CardNumber::ACE_CLUBS,
             CardNumber::KING_DIAMONDS,

@@ -52,7 +52,11 @@ struct Args {
 /// cargo run --example calc -- -d "J♥ J♣ A♥ 4♥" -b "3♣ 4♠ 4♣ 7♣ 9♠" HSP S09E05 Adelstein/Brunson 2nd
 /// cargo run --example calc -- -d "8♦ 5♦ K♦ J♥ 2♠ 2♥" -b "9♥ 2♦ K♥ 4♥ J♠" HSP S09E05 Tilly/Hultman
 /// cargo run --example calc -- -d "J♥ J♦ A♠ K♦ T♣ 9♣" -b "7♦ K♠ 2♥ 7♣ A♦" HSP S09E05 Liu/Tilly/Menon
+/// cargo run --example calc -- -d "5♠ 5♦ 9♠ 9♥ K♣ T♦" -b "5♣ 9♦ T♥ T♣ Q♦" HSP S09E13 Antonius, Negreanu, Ivey
+///     https://www.pokernews.com/news/2022/05/phil-ivey-negreanu-high-stakes-poker-41207.htm
 ///
+///
+/// cargo run --example calc -- -d "K♣ T♦ 5♠ 5♦ 9♠ 9♥" -b "5♣ 9♦ T♥ T♣ Q♦" HSP S09E13
 fn main() {
     let start = Instant::now();
     env_logger::init();

@@ -2,7 +2,6 @@ use crate::types::arrays::Vectorable;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_deck::PokerDeck;
-use crate::types::U32Card;
 use cardpack::{Pile, Standard52};
 use ckc_rs::cards::two::Two;
 use ckc_rs::{CKCNumber, CardNumber, CardRank, HandError, PokerCard};
@@ -12,8 +11,8 @@ use std::fmt;
 
 pub const POSSIBLE_COMBINATIONS: usize = 7937;
 
-#[derive(Clone, Debug, Hash, PartialEq)]
-pub struct PokerCards(Vec<U32Card>);
+#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+pub struct PokerCards(Vec<CKCNumber>);
 
 impl PokerCards {
     #[must_use]
@@ -69,14 +68,14 @@ impl PokerCards {
     }
 
     #[must_use]
-    pub fn contains(&self, card: &U32Card) -> bool {
+    pub fn contains(&self, card: &CKCNumber) -> bool {
         self.0.contains(card)
     }
 
     #[must_use]
     pub fn deal(&mut self, number: usize) -> PokerCards {
         if self.len() >= number {
-            let v: Vec<U32Card> = self.0.drain(0..number).collect();
+            let v: Vec<CKCNumber> = self.0.drain(0..number).collect();
             PokerCards(v)
         } else {
             PokerCards::default()
@@ -124,7 +123,7 @@ impl PokerCards {
                 .clone()
                 .into_iter()
                 .filter(|c| *c != CardNumber::BLANK)
-                .collect::<Vec<U32Card>>(),
+                .collect::<Vec<CKCNumber>>(),
         )
     }
 
@@ -135,12 +134,12 @@ impl PokerCards {
                 .clone()
                 .into_iter()
                 .filter(|c| c.get_card_rank() as u8 >= rank as u8)
-                .collect::<Vec<U32Card>>(),
+                .collect::<Vec<CKCNumber>>(),
         )
     }
 
     #[must_use]
-    pub fn get(&self, index: usize) -> Option<&U32Card> {
+    pub fn get(&self, index: usize) -> Option<&CKCNumber> {
         self.0.get(index)
     }
 
@@ -159,7 +158,7 @@ impl PokerCards {
         self.len() == PlayingCards::from(self).len()
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &U32Card> {
+    pub fn iter(&self) -> impl Iterator<Item = &CKCNumber> {
         self.0.iter()
     }
 
@@ -168,7 +167,7 @@ impl PokerCards {
         self.0.len()
     }
 
-    pub fn pop(&mut self) -> Option<U32Card> {
+    pub fn pop(&mut self) -> Option<CKCNumber> {
         self.0.pop()
     }
 
@@ -182,7 +181,7 @@ impl PokerCards {
         v
     }
 
-    pub fn pull(&mut self) -> U32Card {
+    pub fn pull(&mut self) -> CKCNumber {
         if self.is_empty() {
             return CardNumber::BLANK;
         }
@@ -190,7 +189,7 @@ impl PokerCards {
     }
 
     /// Appends an `PokerCard` to the back of a collection..
-    pub fn push(&mut self, ckc: U32Card) {
+    pub fn push(&mut self, ckc: CKCNumber) {
         self.0.push(ckc);
     }
 
@@ -279,8 +278,8 @@ impl From<&PlayingCards> for PokerCards {
     }
 }
 
-impl From<Vec<U32Card>> for PokerCards {
-    fn from(value: Vec<U32Card>) -> Self {
+impl From<Vec<CKCNumber>> for PokerCards {
+    fn from(value: Vec<CKCNumber>) -> Self {
         PokerCards(value)
     }
 }
@@ -311,7 +310,7 @@ impl TryFrom<String> for PokerCards {
 
 impl Vectorable for PokerCards {
     #[must_use]
-    fn to_vec(&self) -> Vec<U32Card> {
+    fn to_vec(&self) -> Vec<CKCNumber> {
         self.0.clone()
     }
 }

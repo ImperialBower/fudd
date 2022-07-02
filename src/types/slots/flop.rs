@@ -5,9 +5,8 @@ use crate::types::card_slot::CardSlot;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::slots::hole_cards::HoleCards;
-use crate::types::U32Card;
 use ckc_rs::hand_rank::HandRank;
-use ckc_rs::PokerCard;
+use ckc_rs::{CKCNumber, PokerCard};
 use log::warn;
 use serde::{Deserialize, Serialize};
 use std::cell::Cell;
@@ -46,7 +45,7 @@ impl Flop {
         self.2.set(card);
     }
 
-    pub fn to_array(&self) -> [U32Card; 3] {
+    pub fn to_array(&self) -> [CKCNumber; 3] {
         [
             self.get_first_card().as_u32(),
             self.get_second_card().as_u32(),
@@ -54,7 +53,7 @@ impl Flop {
         ]
     }
 
-    pub fn to_array_add_hole_cards(&self, hole_cards: &HoleCards) -> [U32Card; 5] {
+    pub fn to_array_add_hole_cards(&self, hole_cards: &HoleCards) -> [CKCNumber; 5] {
         let ha = hole_cards.to_array();
         let fa = self.to_array();
         [ha[0], ha[1], fa[0], fa[1], fa[2]]
@@ -95,8 +94,8 @@ impl Flop {
             return hands;
         }
 
-        let dummy_kev_value: U32Card = 0;
-        let mut current_hand: [U32Card; 5] = [dummy_kev_value; 5];
+        let dummy_kev_value: CKCNumber = 0;
+        let mut current_hand: [CKCNumber; 5] = [dummy_kev_value; 5];
 
         // Determine what cards are left
         let remaining = self.remaining();

@@ -2,7 +2,7 @@ use crate::games::holdem::hand::Hand;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq, PartialOrd)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, Eq, PartialEq, PartialOrd)]
 #[serde(rename_all = "PascalCase")]
 pub struct HeadsUpRow {
     pub hands: String,

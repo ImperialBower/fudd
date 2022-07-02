@@ -1,9 +1,9 @@
 use crate::types::arrays::Vectorable;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
-use crate::types::{PileOfCards, U32Card};
+use crate::types::PileOfCards;
 use ckc_rs::cards::two::Two;
-use ckc_rs::PokerCard;
+use ckc_rs::{CKCNumber, PokerCard, Shifty};
 use log::warn;
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -84,8 +84,8 @@ impl PileOfCards<PlayingCard> for Hand {
     }
 }
 
-impl PileOfCards<U32Card> for Hand {
-    fn has(&self, card_number: U32Card) -> bool {
+impl PileOfCards<CKCNumber> for Hand {
+    fn has(&self, card_number: CKCNumber) -> bool {
         (self.0.as_u32() == card_number) || (self.1.as_u32() == card_number)
     }
 }
@@ -110,9 +110,15 @@ impl From<&'static str> for Hand {
     }
 }
 
+impl Shifty for Hand {
+    fn shift_suit(&self) -> Self {
+        Hand(self.first().shift_suit(), self.second().shift_suit())
+    }
+}
+
 impl Vectorable for Hand {
     #[must_use]
-    fn to_vec(&self) -> Vec<U32Card> {
+    fn to_vec(&self) -> Vec<CKCNumber> {
         vec![self.first().as_u32(), self.second().as_u32()]
     }
 }
@@ -199,5 +205,13 @@ mod types_hands_holdem_hand {
         let actual = Hand::new(PlayingCard::KING_SPADES, PlayingCard::ACE_SPADES);
 
         assert_eq!(actual.to_string(), "A♠ K♠");
+    }
+
+    #[test]
+    fn shifty() {
+        assert_eq!(
+            Hand::from("A♠ K♠"),
+            Hand::new(PlayingCard::KING_CLUBS, PlayingCard::ACE_CLUBS).shift_suit()
+        )
     }
 }

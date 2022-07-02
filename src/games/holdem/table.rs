@@ -280,6 +280,14 @@ impl Table {
         }
     }
 
+    /// Breakdown:
+    ///
+    /// * Table
+    ///   * .play_out_flop()
+    ///     * .chances_at_flop()
+    ///       * .eval_at_flop() -> CaseEvals
+    ///         * CaseEval
+    ///
     #[allow(clippy::missing_panics_doc)]
     pub fn play_out_flop(&self) -> bool {
         if self.players.len() < 2 || !self.board.flop.is_dealt() {

@@ -9,9 +9,8 @@ use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
 use crate::types::slots::flop::Flop;
 use crate::types::slots::omaha_hand::OmahaHand;
-use crate::types::U32Card;
 use ckc_rs::hand_rank::{HandRank, HandRankName};
-use ckc_rs::{HandError, PokerCard};
+use ckc_rs::{CKCNumber, HandError, PokerCard};
 use std::fmt;
 
 /// [Omaha hold 'em](https://en.wikipedia.org/wiki/Omaha_hold_%27em) starting
@@ -21,7 +20,7 @@ use std::fmt;
 ///
 /// * [Pot-Limit Omaha: What Are the Best Starting Hands?](https://www.pokerlistings.com/strategy/potlimit-omaha-starting-hands)
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct FourCard(pub [U32Card; 4]);
+pub struct FourCard(pub [CKCNumber; 4]);
 
 impl FourCard {
     /// permutations to evaluate all `Omaha` style combinations.
@@ -68,22 +67,22 @@ impl FourCard {
 
     //region getters
     #[must_use]
-    pub fn first(&self) -> U32Card {
+    pub fn first(&self) -> CKCNumber {
         self.0[0]
     }
 
     #[must_use]
-    pub fn second(&self) -> U32Card {
+    pub fn second(&self) -> CKCNumber {
         self.0[1]
     }
 
     #[must_use]
-    pub fn third(&self) -> U32Card {
+    pub fn third(&self) -> CKCNumber {
         self.0[2]
     }
 
     #[must_use]
-    pub fn forth(&self) -> U32Card {
+    pub fn forth(&self) -> CKCNumber {
         self.0[3]
     }
     //endregion
@@ -106,7 +105,7 @@ impl FourCard {
     }
 
     #[must_use]
-    pub fn to_arr(&self) -> [U32Card; 4] {
+    pub fn to_arr(&self) -> [CKCNumber; 4] {
         self.0
     }
 }
@@ -134,8 +133,8 @@ impl From<[PlayingCard; 4]> for FourCard {
     }
 }
 
-impl From<[U32Card; 4]> for FourCard {
-    fn from(value: [U32Card; 4]) -> Self {
+impl From<[CKCNumber; 4]> for FourCard {
+    fn from(value: [CKCNumber; 4]) -> Self {
         FourCard(value)
     }
 }
@@ -159,14 +158,14 @@ impl TryFrom<&'static str> for FourCard {
     }
 }
 
-impl TryFrom<Vec<U32Card>> for FourCard {
+impl TryFrom<Vec<CKCNumber>> for FourCard {
     type Error = HandError;
 
-    fn try_from(value: Vec<U32Card>) -> Result<Self, Self::Error> {
+    fn try_from(value: Vec<CKCNumber>) -> Result<Self, Self::Error> {
         match value.len() {
             0..=3 => Err(HandError::NotEnoughCards),
             4 => {
-                let cards: [U32Card; 4] = value.try_into().unwrap_or_else(|v: Vec<U32Card>| {
+                let cards: [CKCNumber; 4] = value.try_into().unwrap_or_else(|v: Vec<CKCNumber>| {
                     panic!("Expected a Vec of length {} but it was {}", 4, v.len())
                 });
                 Ok(FourCard::from(cards))
@@ -178,7 +177,7 @@ impl TryFrom<Vec<U32Card>> for FourCard {
 
 impl Vectorable for FourCard {
     #[must_use]
-    fn to_vec(&self) -> Vec<U32Card> {
+    fn to_vec(&self) -> Vec<CKCNumber> {
         self.0.to_vec()
     }
 }

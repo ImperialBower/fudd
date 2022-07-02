@@ -1,9 +1,8 @@
 use crate::types::playing_card::PlayingCard;
-use crate::types::U32Card;
 use bitvec::field::BitField;
 use bitvec::prelude::{BitArray, BitSlice, BitVec, Msb0};
 use cardpack::Card;
-use ckc_rs::{HandError, PokerCard};
+use ckc_rs::{CKCNumber, HandError, PokerCard};
 use std::fmt;
 use std::fmt::{Display, Formatter};
 use wyz::FmtForward;
@@ -34,6 +33,7 @@ impl BitCard {
         let mut word_string = String::with_capacity(35);
         let start_bit: usize = 0;
         let bits = start_bit..start_bit + 32;
+
         for (bit, idx) in self.0.as_bitslice().iter().by_val().zip(bits) {
             word_string.push_str(if bit { "1" } else { "0" });
             if split && idx % 8 == 7 && idx % 32 != 31 {
@@ -146,7 +146,7 @@ impl BitCard {
     }
 
     #[must_use]
-    pub fn to_poker_card(&self) -> U32Card {
+    pub fn to_poker_card(&self) -> CKCNumber {
         self.as_bitslice().load_be::<u32>()
     }
 
@@ -245,8 +245,8 @@ impl From<PlayingCard> for BitCard {
     }
 }
 
-impl From<U32Card> for BitCard {
-    fn from(number: U32Card) -> Self {
+impl From<CKCNumber> for BitCard {
+    fn from(number: CKCNumber) -> Self {
         let mut bc: BitCard = BitCard::default();
         if number == 0_u32 {
             return bc;

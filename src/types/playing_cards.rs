@@ -6,10 +6,9 @@ use crate::types::arrays::{Evaluable, Vectorable};
 use crate::types::playing_card::PlayingCard;
 use crate::types::poker_cards::PokerCards;
 use crate::types::poker_deck::PokerDeck;
-use crate::types::U32Card;
 use crate::util::random_ordering::RandomOrdering;
 use cardpack::Pile;
-use ckc_rs::{HandError, PokerCard};
+use ckc_rs::{CKCNumber, HandError, PokerCard};
 use core::fmt;
 use indexmap::set::Iter;
 use indexmap::IndexSet;
@@ -19,7 +18,7 @@ use std::fmt::Formatter;
 
 const NUMBER_OF_SHUFFLES: u8 = 5;
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct PlayingCards(IndexSet<PlayingCard>);
 
 impl PlayingCards {
@@ -146,7 +145,7 @@ impl PlayingCards {
     }
 
     #[must_use]
-    pub fn iter(&self) -> indexmap::set::Iter<'_, PlayingCard> {
+    pub fn iter(&self) -> Iter<'_, PlayingCard> {
         self.0.iter()
     }
 
@@ -240,7 +239,7 @@ impl PlayingCards {
 }
 
 impl fmt::Display for PlayingCards {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         let s = self
             .iter()
             .map(PlayingCard::to_string)
@@ -281,8 +280,8 @@ impl From<&PokerCards> for PlayingCards {
     }
 }
 
-impl From<&Vec<U32Card>> for PlayingCards {
-    fn from(v: &Vec<U32Card>) -> Self {
+impl From<&Vec<CKCNumber>> for PlayingCards {
+    fn from(v: &Vec<CKCNumber>) -> Self {
         let filtered = v.iter().filter_map(|c| {
             let pc = PlayingCard::from(*c);
             if pc.is_blank() {

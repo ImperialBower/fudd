@@ -6,9 +6,8 @@ use crate::types::arrays::{Evaluable, Vectorable};
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
-use crate::types::U32Card;
 use ckc_rs::cards::seven::Seven;
-use ckc_rs::{CardNumber, HandError, PokerCard};
+use ckc_rs::{CKCNumber, CardNumber, HandError, PokerCard};
 use core::fmt;
 use serde::{Deserialize, Serialize};
 use std::fmt::Formatter;
@@ -16,7 +15,7 @@ use std::fmt::Formatter;
 #[derive(
     Serialize, Deserialize, Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd,
 )]
-pub struct SevenCard([U32Card; 7]);
+pub struct SevenCard([CKCNumber; 7]);
 
 impl SevenCard {
     #[must_use]
@@ -34,37 +33,37 @@ impl SevenCard {
 
     //region getters
     #[must_use]
-    pub fn first(&self) -> U32Card {
+    pub fn first(&self) -> CKCNumber {
         self.0[0]
     }
 
     #[must_use]
-    pub fn second(&self) -> U32Card {
+    pub fn second(&self) -> CKCNumber {
         self.0[1]
     }
 
     #[must_use]
-    pub fn third(&self) -> U32Card {
+    pub fn third(&self) -> CKCNumber {
         self.0[2]
     }
 
     #[must_use]
-    pub fn forth(&self) -> U32Card {
+    pub fn forth(&self) -> CKCNumber {
         self.0[3]
     }
 
     #[must_use]
-    pub fn fifth(&self) -> U32Card {
+    pub fn fifth(&self) -> CKCNumber {
         self.0[4]
     }
 
     #[must_use]
-    pub fn sixth(&self) -> U32Card {
+    pub fn sixth(&self) -> CKCNumber {
         self.0[5]
     }
 
     #[must_use]
-    pub fn seventh(&self) -> U32Card {
+    pub fn seventh(&self) -> CKCNumber {
         self.0[6]
     }
     //endregion
@@ -82,7 +81,7 @@ impl SevenCard {
     }
 
     #[must_use]
-    pub fn to_arr(&self) -> [U32Card; 7] {
+    pub fn to_arr(&self) -> [CKCNumber; 7] {
         self.0
     }
 
@@ -101,7 +100,7 @@ impl fmt::Display for SevenCard {
 impl Evaluable for SevenCard {
     fn evals(&self) -> Evals {
         let mut evals = Evals::default();
-        let mut subhand: [U32Card; 5] = [CardNumber::BLANK; 5];
+        let mut subhand: [CKCNumber; 5] = [CardNumber::BLANK; 5];
 
         for ids in &ckc_rs::cards::seven::Seven::FIVE_CARD_PERMUTATIONS {
             for i in 0..5 {
@@ -128,8 +127,8 @@ impl From<[PlayingCard; 7]> for SevenCard {
     }
 }
 
-impl From<[U32Card; 7]> for SevenCard {
-    fn from(array: [U32Card; 7]) -> Self {
+impl From<[CKCNumber; 7]> for SevenCard {
+    fn from(array: [CKCNumber; 7]) -> Self {
         SevenCard(array)
     }
 }
@@ -242,7 +241,7 @@ impl TryFrom<Vec<&PlayingCard>> for SevenCard {
 
 impl Vectorable for SevenCard {
     #[must_use]
-    fn to_vec(&self) -> Vec<U32Card> {
+    fn to_vec(&self) -> Vec<CKCNumber> {
         self.0.to_vec()
     }
 }

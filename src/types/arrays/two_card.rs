@@ -3,9 +3,8 @@ use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::ranges::two_cards_set::TwoCardsSet;
 use crate::types::slots::hole_cards::HoleCards;
-use crate::types::U32Card;
 use ckc_rs::cards::two::Two;
-use ckc_rs::{CardNumber, HandError, PokerCard};
+use ckc_rs::{CKCNumber, CardNumber, HandError, PokerCard, Shifty};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::slice::Iter;
@@ -14,7 +13,7 @@ use std::slice::Iter;
 #[derive(
     Serialize, Deserialize, Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd,
 )]
-pub struct TwoCard([U32Card; 2]);
+pub struct TwoCard([CKCNumber; 2]);
 
 impl TwoCard {
     /// Factory method that ensures that the two cards are different, and neither
@@ -24,7 +23,7 @@ impl TwoCard {
     ///
     /// Throws a `HandError::DuplicateCard` error if the two cards are identical.
     #[allow(clippy::comparison_chain)]
-    pub fn new(first: U32Card, second: U32Card) -> Result<TwoCard, HandError> {
+    pub fn new(first: CKCNumber, second: CKCNumber) -> Result<TwoCard, HandError> {
         if first == second {
             Err(HandError::DuplicateCard)
         } else if first == CardNumber::BLANK || second == CardNumber::BLANK {
@@ -79,47 +78,48 @@ impl TwoCard {
     }
 
     #[must_use]
-    pub fn iter(&self) -> Iter<'_, U32Card> {
+    pub fn iter(&self) -> Iter<'_, CKCNumber> {
         self.0.iter()
     }
 
     #[must_use]
-    pub fn to_arr(&self) -> [U32Card; 2] {
+    pub fn to_arr(&self) -> [CKCNumber; 2] {
         self.0
     }
 
     //region getters
     #[must_use]
-    pub fn first(&self) -> U32Card {
+    pub fn first(&self) -> CKCNumber {
         self.0[0]
     }
 
     #[must_use]
-    pub fn second(&self) -> U32Card {
+    pub fn second(&self) -> CKCNumber {
         self.0[1]
     }
     //endregion
 
     //region nicknamed
-    pub const POCKET_ROCKETS: [U32Card; 2] = [CardNumber::ACE_DIAMONDS, CardNumber::ACE_CLUBS];
-    pub const COWBOYS: [U32Card; 2] = [CardNumber::KING_DIAMONDS, CardNumber::KING_CLUBS];
-    pub const LADIES: [U32Card; 2] = [CardNumber::QUEEN_DIAMONDS, CardNumber::QUEEN_CLUBS];
-    pub const FISHHOOKS: [U32Card; 2] = [CardNumber::JACK_DIAMONDS, CardNumber::JACK_CLUBS];
-    pub const DIMES: [U32Card; 2] = [CardNumber::TEN_DIAMONDS, CardNumber::TEN_CLUBS];
-    pub const POPEYES: [U32Card; 2] = [CardNumber::NINE_DIAMONDS, CardNumber::NINE_CLUBS];
-    pub const SNOWMEN: [U32Card; 2] = [CardNumber::EIGHT_DIAMONDS, CardNumber::EIGHT_CLUBS];
-    pub const WALKING_STICKS: [U32Card; 2] = [CardNumber::SEVEN_DIAMONDS, CardNumber::SEVEN_CLUBS];
-    pub const ROUTE_66: [U32Card; 2] = [CardNumber::SIX_DIAMONDS, CardNumber::SIX_CLUBS];
-    pub const SPEED_LIMIT: [U32Card; 2] = [CardNumber::FIVE_DIAMONDS, CardNumber::FIVE_CLUBS];
-    pub const SAILBOATS: [U32Card; 2] = [CardNumber::FOUR_DIAMONDS, CardNumber::FOUR_CLUBS];
-    pub const CRABS: [U32Card; 2] = [CardNumber::TREY_DIAMONDS, CardNumber::TREY_CLUBS];
-    pub const DUCKS: [U32Card; 2] = [CardNumber::DEUCE_DIAMONDS, CardNumber::DEUCE_CLUBS];
+    pub const POCKET_ROCKETS: [CKCNumber; 2] = [CardNumber::ACE_DIAMONDS, CardNumber::ACE_CLUBS];
+    pub const COWBOYS: [CKCNumber; 2] = [CardNumber::KING_DIAMONDS, CardNumber::KING_CLUBS];
+    pub const LADIES: [CKCNumber; 2] = [CardNumber::QUEEN_DIAMONDS, CardNumber::QUEEN_CLUBS];
+    pub const FISHHOOKS: [CKCNumber; 2] = [CardNumber::JACK_DIAMONDS, CardNumber::JACK_CLUBS];
+    pub const DIMES: [CKCNumber; 2] = [CardNumber::TEN_DIAMONDS, CardNumber::TEN_CLUBS];
+    pub const POPEYES: [CKCNumber; 2] = [CardNumber::NINE_DIAMONDS, CardNumber::NINE_CLUBS];
+    pub const SNOWMEN: [CKCNumber; 2] = [CardNumber::EIGHT_DIAMONDS, CardNumber::EIGHT_CLUBS];
+    pub const WALKING_STICKS: [CKCNumber; 2] =
+        [CardNumber::SEVEN_DIAMONDS, CardNumber::SEVEN_CLUBS];
+    pub const ROUTE_66: [CKCNumber; 2] = [CardNumber::SIX_DIAMONDS, CardNumber::SIX_CLUBS];
+    pub const SPEED_LIMIT: [CKCNumber; 2] = [CardNumber::FIVE_DIAMONDS, CardNumber::FIVE_CLUBS];
+    pub const SAILBOATS: [CKCNumber; 2] = [CardNumber::FOUR_DIAMONDS, CardNumber::FOUR_CLUBS];
+    pub const CRABS: [CKCNumber; 2] = [CardNumber::TREY_DIAMONDS, CardNumber::TREY_CLUBS];
+    pub const DUCKS: [CKCNumber; 2] = [CardNumber::DEUCE_DIAMONDS, CardNumber::DEUCE_CLUBS];
     //endregion
 }
 
 impl Vectorable for TwoCard {
     #[must_use]
-    fn to_vec(&self) -> Vec<U32Card> {
+    fn to_vec(&self) -> Vec<CKCNumber> {
         self.0.to_vec()
     }
 }
@@ -135,20 +135,20 @@ impl fmt::Display for TwoCard {
     }
 }
 
-impl From<&[U32Card; 2]> for TwoCard {
-    fn from(array: &[U32Card; 2]) -> Self {
+impl From<&[CKCNumber; 2]> for TwoCard {
+    fn from(array: &[CKCNumber; 2]) -> Self {
         TwoCard(*array)
     }
 }
 
-impl From<[U32Card; 2]> for TwoCard {
-    fn from(array: [U32Card; 2]) -> Self {
+impl From<[CKCNumber; 2]> for TwoCard {
+    fn from(array: [CKCNumber; 2]) -> Self {
         TwoCard(array)
     }
 }
 
-impl From<Vec<U32Card>> for TwoCard {
-    fn from(v: Vec<U32Card>) -> Self {
+impl From<Vec<CKCNumber>> for TwoCard {
+    fn from(v: Vec<CKCNumber>) -> Self {
         // let mut one = CardNumber::BLANK;
 
         let one = match v.get(0) {
@@ -184,6 +184,12 @@ impl From<Vec<&PlayingCard>> for TwoCard {
             Ok(two_card) => two_card,
             Err(_) => TwoCard::default(),
         }
+    }
+}
+
+impl Shifty for TwoCard {
+    fn shift_suit(&self) -> Self {
+        TwoCard::from(Two::from(self.to_arr()).shift_suit())
     }
 }
 

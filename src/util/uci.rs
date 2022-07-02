@@ -1,7 +1,6 @@
 use crate::types::arrays::five_card::FiveCard;
-use crate::types::U32Card;
 use ckc_rs::hand_rank::HandRankName;
-use ckc_rs::{CardRank, CardSuit, PokerCard};
+use ckc_rs::{CKCNumber, CardRank, CardSuit, PokerCard};
 
 pub struct UCI;
 
@@ -13,23 +12,23 @@ impl UCI {
         if i.len() < 11 {
             return None;
         }
-        let first = U32Card::create(
+        let first = CKCNumber::create(
             UCI::get_rank(i.get(1).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(0).unwrap().parse::<usize>().unwrap()),
         );
-        let second = U32Card::create(
+        let second = CKCNumber::create(
             UCI::get_rank(i.get(3).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(2).unwrap().parse::<usize>().unwrap()),
         );
-        let third = U32Card::create(
+        let third = CKCNumber::create(
             UCI::get_rank(i.get(5).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(4).unwrap().parse::<usize>().unwrap()),
         );
-        let forth = U32Card::create(
+        let forth = CKCNumber::create(
             UCI::get_rank(i.get(7).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(6).unwrap().parse::<usize>().unwrap()),
         );
-        let fifth = U32Card::create(
+        let fifth = CKCNumber::create(
             UCI::get_rank(i.get(9).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(8).unwrap().parse::<usize>().unwrap()),
         );
@@ -97,7 +96,7 @@ mod util_uci_tests {
 
     #[test]
     fn create() {
-        let card = U32Card::create(UCI::get_rank(10), UCI::get_suit(1));
+        let card = CKCNumber::create(UCI::get_rank(10), UCI::get_suit(1));
 
         assert_eq!(card, CardNumber::TEN_HEARTS);
     }

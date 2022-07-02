@@ -130,6 +130,7 @@ to my [cardpack.rs](https://github.com/ContractBridge/cardpack.rs) library:
     * [manuelbucher/distributed-cards](https://gitlab.com/manuelbucher/distributed-cards) - [crate](https://crates.io/crates/distributed-cards) Implements the mental poker shuffling algorithm
     * [lucasholder/fair](https://github.com/lucasholder/fair) - [crate](https://crates.io/crates/fair) CLI tool and library for verifying provably fair games (baccarat, etc.).
     * [davefol/Poker-Range-Trainer](https://github.com/davefol/Poker-Range-Trainer)
+    * [CPP Texas Solver](https://github.com/bupticybee/TexasSolver)
     * Heads Up
       * [Poker odds pre-flop heads-up](https://tools.timodenk.com/poker-odds-pre-flop)
         * [JS Source](https://github.com/Simsso/Online-Tools/blob/master/src/page/logic/poker-odds-pre-flop.js)
@@ -145,6 +146,8 @@ to my [cardpack.rs](https://github.com/ContractBridge/cardpack.rs) library:
   * Chen Formula
     * [Chen Formula](https://www.thepokerbank.com/strategy/basic/starting-hand-selection/chen-formula/)
     * [The Strategy Behind The Chen Formula in Poker](https://www.888poker.com/magazine/strategy/chen-formula#The%20Chen%20Formula%20%E2%80%93%20Usage)
+  * [poker-ai.org](http://www.poker-ai.org)
+    * [How to generate look up tables?](http://www.poker-ai.org/archive/www.pokerai.org/pf3/viewtopicd054.html?p=39700)
 * Commercial Tools
   * [ProPokerTools](http://www.propokertools.com/)
     * [PQL](http://www.propokertools.com/pql)

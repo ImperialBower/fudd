@@ -4,10 +4,9 @@ use crate::types::arrays::five_card::FiveCard;
 use crate::types::bitvec::bit_cards::BitCards;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
-use crate::types::U32Card;
 use cardpack::Pile;
 use ckc_rs::hand_rank::HandRank;
-use ckc_rs::CardNumber;
+use ckc_rs::{CKCNumber, CardNumber};
 
 pub mod five_card;
 pub mod four_card;
@@ -38,9 +37,9 @@ pub trait Evaluable {
 }
 
 pub trait Vectorable {
-    fn to_vec(&self) -> Vec<U32Card>;
+    fn to_vec(&self) -> Vec<CKCNumber>;
 
-    fn contains(&self, poker_card: &U32Card) -> bool {
+    fn contains(&self, poker_card: &CKCNumber) -> bool {
         self.to_vec().contains(poker_card)
     }
 

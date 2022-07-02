@@ -8,18 +8,17 @@ use crate::types::arrays::{Evaluable, Vectorable};
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
-use crate::types::U32Card;
 use cardpack::Pile;
 use ckc_rs::cards::five::Five;
 use ckc_rs::hand_rank::HandRank;
-use ckc_rs::{HandError, PokerCard};
+use ckc_rs::{CKCNumber, HandError, PokerCard};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
 #[derive(
     Serialize, Deserialize, Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd,
 )]
-pub struct FiveCard(pub [U32Card; 5]);
+pub struct FiveCard(pub [CKCNumber; 5]);
 
 impl FiveCard {
     #[must_use]
@@ -42,32 +41,32 @@ impl FiveCard {
     }
 
     #[must_use]
-    pub fn first(&self) -> U32Card {
+    pub fn first(&self) -> CKCNumber {
         self.0[0]
     }
 
     #[must_use]
-    pub fn second(&self) -> U32Card {
+    pub fn second(&self) -> CKCNumber {
         self.0[1]
     }
 
     #[must_use]
-    pub fn third(&self) -> U32Card {
+    pub fn third(&self) -> CKCNumber {
         self.0[2]
     }
 
     #[must_use]
-    pub fn forth(&self) -> U32Card {
+    pub fn forth(&self) -> CKCNumber {
         self.0[3]
     }
 
     #[must_use]
-    pub fn fifth(&self) -> U32Card {
+    pub fn fifth(&self) -> CKCNumber {
         self.0[4]
     }
 
     #[must_use]
-    pub fn to_arr(&self) -> [U32Card; 5] {
+    pub fn to_arr(&self) -> [CKCNumber; 5] {
         self.0
     }
 
@@ -107,14 +106,14 @@ impl Evaluable for Five {
 }
 
 impl Vectorable for Five {
-    fn to_vec(&self) -> Vec<U32Card> {
+    fn to_vec(&self) -> Vec<CKCNumber> {
         self.to_arr().to_vec()
     }
 }
 
 impl Vectorable for FiveCard {
     #[must_use]
-    fn to_vec(&self) -> Vec<U32Card> {
+    fn to_vec(&self) -> Vec<CKCNumber> {
         self.0.to_vec()
     }
 }
@@ -125,8 +124,8 @@ impl fmt::Display for FiveCard {
     }
 }
 
-impl From<[U32Card; 5]> for FiveCard {
-    fn from(array: [U32Card; 5]) -> Self {
+impl From<[CKCNumber; 5]> for FiveCard {
+    fn from(array: [CKCNumber; 5]) -> Self {
         FiveCard(array)
     }
 }
@@ -249,14 +248,14 @@ impl TryFrom<&'static str> for FiveCard {
     }
 }
 
-impl TryFrom<Vec<U32Card>> for FiveCard {
+impl TryFrom<Vec<CKCNumber>> for FiveCard {
     type Error = HandError;
 
-    fn try_from(value: Vec<U32Card>) -> Result<Self, Self::Error> {
+    fn try_from(value: Vec<CKCNumber>) -> Result<Self, Self::Error> {
         match value.len() {
             0..=4 => Err(HandError::NotEnoughCards),
             5 => {
-                let cards: [U32Card; 5] = value.try_into().unwrap_or_else(|v: Vec<U32Card>| {
+                let cards: [CKCNumber; 5] = value.try_into().unwrap_or_else(|v: Vec<CKCNumber>| {
                     panic!("Expected a Vec of length {} but it was {}", 5, v.len())
                 });
                 Ok(FiveCard::from(cards))

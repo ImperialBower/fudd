@@ -3,8 +3,8 @@ use crate::games::holdem::hand::Hand;
 use crate::types::arrays::Vectorable;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
-use crate::types::{PileOfCards, U32Card};
-use ckc_rs::PokerCard;
+use crate::types::PileOfCards;
+use ckc_rs::{CKCNumber, PokerCard};
 use itertools::Itertools;
 use log::debug;
 use serde::{Deserialize, Serialize};
@@ -189,15 +189,15 @@ impl PileOfCards<PlayingCard> for HeadsUp {
     }
 }
 
-impl PileOfCards<U32Card> for HeadsUp {
-    fn has(&self, card_number: U32Card) -> bool {
+impl PileOfCards<CKCNumber> for HeadsUp {
+    fn has(&self, card_number: CKCNumber) -> bool {
         self.first.has(card_number) || self.second.has(card_number)
     }
 }
 
 impl Vectorable for HeadsUp {
     #[must_use]
-    fn to_vec(&self) -> Vec<U32Card> {
+    fn to_vec(&self) -> Vec<CKCNumber> {
         vec![
             self.first.first().as_u32(),
             self.first.second().as_u32(),
