@@ -4,20 +4,20 @@ description = "Fun with poker"
 version = "0.1.5"
 authors = ["gaoler <gaoler@electronicpanopticon.com>"]
 edition = "2021"
+rust-version = "1.64"
 license = "GPL-3.0-or-later"
 exclude = [".github/workflows/*", "examples/*", ".gitignore", "Cargo.lock"]
-repository = "https://github.com/ContractBridge/fudd.git"
-homepage = "https://github.com/ContractBridge/fudd"
+repository = "https://github.com/ImperialBower/fudd.git"
+homepage = "https://github.com/ImperialBower/fudd"
 
 [lib]
 name = "fudd"
 path = "src/lib.rs"
 
 [dependencies]
-bitvec = "0.22.3"
 cardpack = "0.4.14"
-# ckc-rs = { git = "https://github.com/ContractBridge/ckc-rs", branch = "cards" }
-ckc-rs = "0.1.13"
+# ckc-rs = { git = "https://github.com/ImperialBower/ckc-rs", branch = "cards" }
+ckc-rs = "0.1.14"
 csv = "1.1.6"
 indexmap = "1.8.0"
 itertools = "0.10.2"
@@ -25,22 +25,22 @@ lazy_static = "1.4.0"
 log = "0.4.16"
 rand = "0.8.4"
 rayon = "1.5.2"
-serde = { version = "1.0.136", features = ["derive"] }
+serde = { version = "1.0.155", features = ["derive"] }
 strum = { version = "0.24" , features = ["derive"]}
 strum_macros = "0.24"
 wincounter = "0.1.1"
-wyz = "0.5.0"
+wyz = "0.6.1"
 
 [dev-dependencies]
-clap = { version = "3.1.12", features = ["derive", "unicode"] }
-criterion = "0.3.5"
+clap = { version = "4.1.6", features = ["cargo", "derive", "unicode"] }
+criterion = "0.4.0"
 doc-comment = "0.3.3"
-env_logger = "0.9.0"
+env_logger = "0.10.0"
 num-format = "0.4.0"
-rstest = "0.12.0"
+rstest = "0.16.0"
 serde_json = "1.0.74"
 serde_test = "1.0.136"
-serde_yaml = "0.8.23"
+serde_yaml = "0.9.19"
 sled = "0.34.7"
 simplelog = { version = "^0.12.0", features = ["paris"] }
 text_io = "0.1.9"

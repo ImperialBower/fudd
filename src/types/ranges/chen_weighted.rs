@@ -29,7 +29,7 @@ impl fmt::Display for ChenWeightedPair {
     }
 }
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct ChenWeighted(Vec<ChenWeightedPair>);
 
 impl ChenWeighted {

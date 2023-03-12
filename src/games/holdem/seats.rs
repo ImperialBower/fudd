@@ -14,7 +14,7 @@ use log::debug;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Seats(Vec<Seat>);
 
 impl Seats {
@@ -230,7 +230,7 @@ impl Default for Seats {
 impl fmt::Display for Seats {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let joined = Itertools::join(&mut self.0.iter(), ", ");
-        write!(f, "[{}]", joined)
+        write!(f, "[{joined}]")
     }
 }
 

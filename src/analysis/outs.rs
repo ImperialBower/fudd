@@ -37,16 +37,9 @@ impl Outs {
 
     #[must_use]
     pub fn get_unless_most(&self, player: usize) -> Option<&PlayingCards> {
-        match self.0.get(&player) {
-            Some(set) => {
-                if set.len() < self.len_most() {
-                    Some(set)
-                } else {
-                    None
-                }
-            }
-            None => None,
-        }
+        self.0
+            .get(&player)
+            .filter(|&set| set.len() < self.len_most())
     }
 
     #[must_use]

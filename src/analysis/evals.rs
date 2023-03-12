@@ -3,7 +3,7 @@ use crate::analysis::indexed::Indexed;
 use ckc_rs::hand_rank::HandRankClass;
 use std::collections::HashSet;
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Evals(Vec<Eval>);
 
 impl Evals {
@@ -47,7 +47,7 @@ impl From<Eval> for Evals {
 }
 
 /// `EvalsPerClass` is a tuple struct used to hold unique hand evaluations.
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 #[allow(clippy::module_name_repetitions)]
 pub struct EvalsPerClass(Vec<Eval>, HashSet<HandRankClass>);
 

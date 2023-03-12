@@ -1,6 +1,6 @@
 use crate::analysis::eval_7card::Eval7Card;
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Evals7Card(Vec<Eval7Card>);
 
 impl Evals7Card {

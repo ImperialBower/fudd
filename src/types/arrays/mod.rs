@@ -1,12 +1,12 @@
 use crate::analysis::eval::Eval;
 use crate::analysis::evals::Evals;
 use crate::types::arrays::five_card::FiveCard;
-use crate::types::bitvec::bit_cards::BitCards;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
+use crate::types::U32Card;
 use cardpack::Pile;
 use ckc_rs::hand_rank::HandRank;
-use ckc_rs::{CKCNumber, CardNumber};
+use ckc_rs::{CardNumber, PokerCard};
 
 pub mod five_card;
 pub mod four_card;
@@ -37,9 +37,9 @@ pub trait Evaluable {
 }
 
 pub trait Vectorable {
-    fn to_vec(&self) -> Vec<CKCNumber>;
+    fn to_vec(&self) -> Vec<U32Card>;
 
-    fn contains(&self, poker_card: &CKCNumber) -> bool {
+    fn contains(&self, poker_card: &U32Card) -> bool {
         self.to_vec().contains(poker_card)
     }
 
@@ -47,16 +47,29 @@ pub trait Vectorable {
         self.contains(&CardNumber::BLANK)
     }
 
+    /// TODO: Refactor into a stream
+    #[allow(clippy::cast_possible_truncation)]
     fn rank_count(&self) -> u8 {
-        BitCards::from(self.to_vec()).rank_count()
+        let mut f: u32 = 0;
+        for i in &self.to_vec() {
+            f |= i.get_rank_flag();
+        }
+
+        f.count_ones() as u8
     }
 
     fn remaining(&self) -> PlayingCards {
         PlayingCards::deck_minus(&self.to_playing_cards())
     }
 
+    #[allow(clippy::cast_possible_truncation)]
     fn suit_count(&self) -> u8 {
-        BitCards::from(self.to_vec()).suit_count()
+        let mut f: u32 = 0;
+        for i in &self.to_vec() {
+            f |= i.get_suit_flag();
+        }
+
+        f.count_ones() as u8
     }
 
     fn to_pile(&self) -> Pile {

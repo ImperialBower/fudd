@@ -14,12 +14,8 @@ pub struct CaseEval(Vec<SeatEval>);
 impl CaseEval {
     #[must_use]
     pub fn get_seat(&self, seat_number: usize) -> Option<&SeatEval> {
-        for seat_eval in self.iter() {
-            if seat_eval.seat.number == seat_number {
-                return Some(seat_eval);
-            }
-        }
-        None
+        self.iter()
+            .find(|&seat_eval| seat_eval.seat.number == seat_number)
     }
 
     pub fn push(&mut self, seat_eval: SeatEval) {

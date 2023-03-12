@@ -1,13 +1,12 @@
-use crate::types::bitvec::bit_card::BitCard;
-use bitvec::field::BitField;
-use ckc_rs::{CKCNumber, CardNumber, PokerCard, Shifty};
+use crate::types::U32Card;
+use ckc_rs::{CKCNumber, CardNumber, PokerCard};
 use serde::de::Deserializer;
 use serde::ser::{Serialize, Serializer};
 use serde::Deserialize;
 use std::fmt;
 
 #[derive(Deserialize, Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct PlayingCard(#[serde(deserialize_with = "deserialize_card_index")] CKCNumber);
+pub struct PlayingCard(#[serde(deserialize_with = "deserialize_card_index")] U32Card);
 
 impl PlayingCard {
     //region cards
@@ -69,7 +68,14 @@ impl PlayingCard {
 
     #[must_use]
     pub fn as_card(&self) -> cardpack::Card {
-        BitCard::from(self.0).to_card()
+        let rank = cardpack::Rank::from_french_deck_char(self.get_rank_char());
+        let suit = cardpack::Suit::from_french_deck_index(self.get_suit_char());
+
+        if rank.is_blank() && suit.is_blank() {
+            return cardpack::Card::default();
+        }
+
+        cardpack::Card::new(rank, suit)
     }
 
     #[must_use]
@@ -78,7 +84,7 @@ impl PlayingCard {
     }
 }
 
-impl PokerCard for PlayingCard {
+impl ckc_rs::PokerCard for PlayingCard {
     fn as_u32(&self) -> u32 {
         self.0
     }
@@ -91,12 +97,6 @@ impl PokerCard for PlayingCard {
 impl fmt::Display for PlayingCard {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}{}", self.get_rank_char(), self.get_suit_char())
-    }
-}
-
-impl From<&BitCard> for PlayingCard {
-    fn from(bitcard: &BitCard) -> Self {
-        PlayingCard(bitcard.as_bitslice().load_be::<u32>())
     }
 }
 
@@ -128,8 +128,8 @@ impl From<&'static str> for PlayingCard {
 /// Sieve to ensure that only valid binary card representations are passed in.
 ///
 /// Invalid `CardNumbers` will return a `Blank` `PlayingCard`.
-impl From<CKCNumber> for PlayingCard {
-    fn from(value: CKCNumber) -> Self {
+impl From<U32Card> for PlayingCard {
+    fn from(value: U32Card) -> Self {
         PlayingCard(ckc_rs::CardNumber::filter(value))
     }
 }
@@ -149,18 +149,12 @@ impl Serialize for PlayingCard {
     }
 }
 
-fn deserialize_card_index<'de, D>(deserializer: D) -> Result<CKCNumber, D::Error>
+fn deserialize_card_index<'de, D>(deserializer: D) -> Result<U32Card, D::Error>
 where
     D: Deserializer<'de>,
 {
     let buf = String::deserialize(deserializer)?;
     Ok(PlayingCard::from(buf).as_u32())
-}
-
-impl Shifty for PlayingCard {
-    fn shift_suit(&self) -> Self {
-        PlayingCard(self.as_u32().shift_suit())
-    }
 }
 
 #[cfg(test)]
@@ -259,14 +253,6 @@ mod holdem_playing_card_tests {
             assert_eq!(PokerDeck::get(i), playing_card.as_u32());
             assert_eq!(playing_card.as_card(), card);
         }
-    }
-
-    #[test]
-    fn shifty() {
-        assert_eq!(
-            PlayingCard::from("QH"),
-            PlayingCard::from("QS").shift_suit()
-        )
     }
 
     // https://serde.rs/unit-testing.html

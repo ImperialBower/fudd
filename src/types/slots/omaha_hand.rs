@@ -2,13 +2,14 @@ use crate::types::arrays::four_card::FourCard;
 use crate::types::card_slot::CardSlot;
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
-use ckc_rs::{CKCNumber, PokerCard};
+use crate::types::U32Card;
+use ckc_rs::PokerCard;
 use log::warn;
 use serde::{Deserialize, Serialize};
 use std::cell::Cell;
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct OmahaHand(
     Cell<PlayingCard>,
     Cell<PlayingCard>,
@@ -64,7 +65,7 @@ impl OmahaHand {
         self.3.set(card);
     }
 
-    pub fn to_array(&self) -> [CKCNumber; 4] {
+    pub fn to_array(&self) -> [U32Card; 4] {
         [
             self.get_first_card().as_u32(),
             self.get_second_card().as_u32(),
@@ -138,8 +139,8 @@ impl fmt::Display for OmahaHand {
     }
 }
 
-impl From<[CKCNumber; 4]> for OmahaHand {
-    fn from(array: [CKCNumber; 4]) -> Self {
+impl From<[U32Card; 4]> for OmahaHand {
+    fn from(array: [U32Card; 4]) -> Self {
         let hand = OmahaHand::default();
         hand.take_first_card(PlayingCard::from(array[0]));
         hand.take_second_card(PlayingCard::from(array[1]));

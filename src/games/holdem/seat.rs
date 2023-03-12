@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::cell::Cell;
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 pub struct Seat {
     pub number: usize,
     folded: Cell<bool>,

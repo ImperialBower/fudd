@@ -8,17 +8,18 @@ use crate::types::arrays::{Evaluable, Vectorable};
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
+use crate::types::U32Card;
 use cardpack::Pile;
 use ckc_rs::cards::five::Five;
 use ckc_rs::hand_rank::HandRank;
-use ckc_rs::{CKCNumber, HandError, PokerCard};
+use ckc_rs::{HandError, PokerCard};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
 #[derive(
     Serialize, Deserialize, Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd,
 )]
-pub struct FiveCard(pub [CKCNumber; 5]);
+pub struct FiveCard(pub [U32Card; 5]);
 
 impl FiveCard {
     #[must_use]
@@ -41,32 +42,32 @@ impl FiveCard {
     }
 
     #[must_use]
-    pub fn first(&self) -> CKCNumber {
+    pub fn first(&self) -> U32Card {
         self.0[0]
     }
 
     #[must_use]
-    pub fn second(&self) -> CKCNumber {
+    pub fn second(&self) -> U32Card {
         self.0[1]
     }
 
     #[must_use]
-    pub fn third(&self) -> CKCNumber {
+    pub fn third(&self) -> U32Card {
         self.0[2]
     }
 
     #[must_use]
-    pub fn forth(&self) -> CKCNumber {
+    pub fn forth(&self) -> U32Card {
         self.0[3]
     }
 
     #[must_use]
-    pub fn fifth(&self) -> CKCNumber {
+    pub fn fifth(&self) -> U32Card {
         self.0[4]
     }
 
     #[must_use]
-    pub fn to_arr(&self) -> [CKCNumber; 5] {
+    pub fn to_arr(&self) -> [U32Card; 5] {
         self.0
     }
 
@@ -106,14 +107,14 @@ impl Evaluable for Five {
 }
 
 impl Vectorable for Five {
-    fn to_vec(&self) -> Vec<CKCNumber> {
+    fn to_vec(&self) -> Vec<U32Card> {
         self.to_arr().to_vec()
     }
 }
 
 impl Vectorable for FiveCard {
     #[must_use]
-    fn to_vec(&self) -> Vec<CKCNumber> {
+    fn to_vec(&self) -> Vec<U32Card> {
         self.0.to_vec()
     }
 }
@@ -124,8 +125,8 @@ impl fmt::Display for FiveCard {
     }
 }
 
-impl From<[CKCNumber; 5]> for FiveCard {
-    fn from(array: [CKCNumber; 5]) -> Self {
+impl From<[U32Card; 5]> for FiveCard {
+    fn from(array: [U32Card; 5]) -> Self {
         FiveCard(array)
     }
 }
@@ -248,14 +249,14 @@ impl TryFrom<&'static str> for FiveCard {
     }
 }
 
-impl TryFrom<Vec<CKCNumber>> for FiveCard {
+impl TryFrom<Vec<U32Card>> for FiveCard {
     type Error = HandError;
 
-    fn try_from(value: Vec<CKCNumber>) -> Result<Self, Self::Error> {
+    fn try_from(value: Vec<U32Card>) -> Result<Self, Self::Error> {
         match value.len() {
             0..=4 => Err(HandError::NotEnoughCards),
             5 => {
-                let cards: [CKCNumber; 5] = value.try_into().unwrap_or_else(|v: Vec<CKCNumber>| {
+                let cards: [U32Card; 5] = value.try_into().unwrap_or_else(|v: Vec<U32Card>| {
                     panic!("Expected a Vec of length {} but it was {}", 5, v.len())
                 });
                 Ok(FiveCard::from(cards))
@@ -279,6 +280,7 @@ mod types_arrays_five_card_tests {
     use super::*;
     use crate::types::playing_card::*;
     use ckc_rs::CardNumber;
+    use rstest::rstest;
 
     #[test]
     fn sort() {
@@ -433,5 +435,30 @@ mod types_arrays_five_card_tests {
 
         assert!(raw.is_err());
         assert_eq!(raw.unwrap_err(), HandError::TooManyCards);
+    }
+
+    #[rstest]
+    #[case("A♠ K♠ Q♠ J♠ T♠", 5)]
+    #[case("A♠ A♥ A♦ A♣ K♠", 2)]
+    #[case("2♠ 2♥ 2♦ 2♣ 3♠", 2)]
+    #[case("A♠ A♥ A♦ K♠ K♦", 2)]
+    #[case("2♠ 2♥ 2♦ 3♠ 3♦", 2)]
+    #[case("A♠ K♠ Q♠ J♠ 9♠", 5)]
+    #[case("2♣ 3♣ 4♣ 5♣ 7♣", 5)]
+    #[case("A♣ K♠ Q♠ J♠ T♠", 5)]
+    #[case("A♥ 2♣ 3♣ 4♣ 5♣", 5)]
+    #[case("A♠ A♥ A♦ K♠ Q♣", 3)]
+    #[case("2♠ 2♥ 2♦ 3♠ 4♣", 3)]
+    #[case("A♠ A♥ K♦ K♠ Q♣", 3)]
+    #[case("3♠ 3♥ 2♦ 2♠ 4♣", 3)]
+    #[case("A♠ A♥ K♠ Q♠ J♠", 4)]
+    #[case("2♠ 2♥ 3♠ 4♠ 5♠", 4)]
+    #[case("A♠ K♠ Q♠ J♠ 9♣", 5)]
+    #[case("2♣ 3♣ 4♣ 5♥ 7♣", 5)]
+    #[case("2♣ 3♦ 4♣ 5♥ 7♣", 5)]
+    fn vectorable__rank_count(#[case] index: &'static str, #[case] count: u8) {
+        let hand = FiveCard::try_from(index).unwrap();
+
+        assert_eq!(hand.rank_count(), count);
     }
 }

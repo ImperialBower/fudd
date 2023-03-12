@@ -1,6 +1,7 @@
 use crate::types::arrays::five_card::FiveCard;
+use crate::types::U32Card;
 use ckc_rs::hand_rank::HandRankName;
-use ckc_rs::{CKCNumber, CardRank, CardSuit, PokerCard};
+use ckc_rs::{CardRank, CardSuit, PokerCard};
 
 pub struct UCI;
 
@@ -12,23 +13,23 @@ impl UCI {
         if i.len() < 11 {
             return None;
         }
-        let first = CKCNumber::create(
+        let first = U32Card::create(
             UCI::get_rank(i.get(1).unwrap().parse::<usize>().unwrap()),
-            UCI::get_suit(i.get(0).unwrap().parse::<usize>().unwrap()),
+            UCI::get_suit(i.first().unwrap().parse::<usize>().unwrap()),
         );
-        let second = CKCNumber::create(
+        let second = U32Card::create(
             UCI::get_rank(i.get(3).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(2).unwrap().parse::<usize>().unwrap()),
         );
-        let third = CKCNumber::create(
+        let third = U32Card::create(
             UCI::get_rank(i.get(5).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(4).unwrap().parse::<usize>().unwrap()),
         );
-        let forth = CKCNumber::create(
+        let forth = U32Card::create(
             UCI::get_rank(i.get(7).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(6).unwrap().parse::<usize>().unwrap()),
         );
-        let fifth = CKCNumber::create(
+        let fifth = U32Card::create(
             UCI::get_rank(i.get(9).unwrap().parse::<usize>().unwrap()),
             UCI::get_suit(i.get(8).unwrap().parse::<usize>().unwrap()),
         );
@@ -92,11 +93,12 @@ impl UCI {
 #[allow(non_snake_case)]
 mod util_uci_tests {
     use super::*;
+    use ckc_rs::hand_rank::HandRankName::StraightFlush;
     use ckc_rs::CardNumber;
 
     #[test]
     fn create() {
-        let card = CKCNumber::create(UCI::get_rank(10), UCI::get_suit(1));
+        let card = U32Card::create(UCI::get_rank(10), UCI::get_suit(1));
 
         assert_eq!(card, CardNumber::TEN_HEARTS);
     }
@@ -106,6 +108,8 @@ mod util_uci_tests {
         let s = "1,10,1,11,1,13,1,12,1,1,9".to_string();
         let (hand, class) = UCI::parse_line(s).unwrap();
 
-        println!("{} {:?}", hand, class);
+        // T♥ J♥ K♥ Q♥ A♥ StraightFlush
+        assert_eq!(hand.to_string(), "T♥ J♥ K♥ Q♥ A♥");
+        assert_eq!(class, StraightFlush);
     }
 }

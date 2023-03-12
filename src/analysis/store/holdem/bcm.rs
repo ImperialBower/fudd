@@ -8,31 +8,10 @@ use ckc_rs::cards::five::Five;
 use ckc_rs::cards::seven::Seven;
 use ckc_rs::cards::{HandRanker, HandValidator};
 use ckc_rs::hand_rank::HandRankValue;
-use csv::Reader;
-use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::error::Error;
-use std::fs::File;
 
-lazy_static! {
-    /// This is a lazy loaded `HashMap` of every combination of `Five` and `Seven` cards combinations
-    /// with their resulting `HandRankValue` and the `Five` cards that make up the best hand.
-    pub static ref BC_RANK: HashMap<BinaryCard, SimpleBinaryCardMap> = {
-        let mut m = HashMap::new();
-        let file_path = "logs/bcm.csv";
-        let file = File::open(file_path).unwrap();
-        let mut rdr = Reader::from_reader(file);
-
-        for result in rdr.deserialize() {
-            let bcm: BinaryCardMap = result.unwrap();
-            m.insert(bcm.bc, SimpleBinaryCardMap::from(bcm));
-        }
-        m
-    };
-}
-
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct SimpleBinaryCardMap {
     pub bc: BinaryCard,
     pub rank: HandRankValue,
@@ -51,7 +30,7 @@ impl From<BinaryCardMap> for SimpleBinaryCardMap {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, Default, PartialEq)]
 pub struct BinaryCardMap {
     pub bc: BinaryCard,
     pub best: BinaryCard,

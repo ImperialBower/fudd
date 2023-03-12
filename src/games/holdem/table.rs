@@ -280,14 +280,6 @@ impl Table {
         }
     }
 
-    /// Breakdown:
-    ///
-    /// * Table
-    ///   * .play_out_flop()
-    ///     * .chances_at_flop()
-    ///       * .eval_at_flop() -> CaseEvals
-    ///         * CaseEval
-    ///
     #[allow(clippy::missing_panics_doc)]
     pub fn play_out_flop(&self) -> bool {
         if self.players.len() < 2 || !self.board.flop.is_dealt() {
@@ -309,7 +301,7 @@ impl Table {
 
         let the_nuts = self.nuts_at_flop();
 
-        println!("\nThe Nuts would be: {}", the_nuts);
+        println!("\nThe Nuts would be: {the_nuts}");
 
         for seat_eval in self.who_flopped_the_nuts().iter() {
             println!(
@@ -329,7 +321,7 @@ impl Table {
             println!("\nPossible hands at the flop, sorted by strength:");
 
             for (v, e) in self.board.flop.all_possible().indexed().index_map() {
-                println!("CKC #{} {}", v, e);
+                println!("CKC #{v} {e}");
             }
             println!("See https://suffe.cool/poker/7462.html for a listing of all CKC numbers.");
 

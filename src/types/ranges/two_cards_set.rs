@@ -84,17 +84,7 @@ impl TwoCardsSet {
     }
 
     pub fn sample(&mut self) -> Option<TwoCard> {
-        let sampled = self.two_cards_vec().sample();
-        match sampled {
-            Some(s) => {
-                if self.remove(&s) {
-                    Some(s)
-                } else {
-                    None
-                }
-            }
-            None => None,
-        }
+        self.two_cards_vec().sample().filter(|&s| self.remove(&s))
     }
 
     #[must_use]

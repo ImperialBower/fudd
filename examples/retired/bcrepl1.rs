@@ -3,34 +3,39 @@ use ckc_rs::cards::five::Five;
 use ckc_rs::cards::seven::Seven;
 use ckc_rs::cards::two::Two;
 use csv::Reader;
-use fudd::analysis::store::holdem::bcm::{BinaryCardMap, SimpleBinaryCardMap};
 use fudd::types::arrays::five_card::FiveCard;
 use fudd::types::arrays::Vectorable;
 use fudd::types::playing_cards::PlayingCards;
 use fudd::types::poker_cards::PokerCards;
 use lazy_static::lazy_static;
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io;
 use std::io::Write;
 use wincounter::{Win, Wins};
 
+#[derive(Debug, Deserialize)]
+pub struct BCM {
+    pub bc: u64,
+    pub rank: u16,
+}
+
 lazy_static! {
-    static ref BC_RANK: HashMap<BinaryCard, SimpleBinaryCardMap> = {
+    static ref BC_RANK: HashMap<u64, u16> = {
         let mut m = HashMap::new();
-        let file_path = "logs/bcm.csv";
+        let file_path = "logs/bc.csv";
         let file = File::open(file_path).unwrap();
         let mut rdr = Reader::from_reader(file);
 
         for result in rdr.deserialize() {
-            let bcm: BinaryCardMap = result.unwrap();
-            m.insert(bcm.bc, SimpleBinaryCardMap::from(bcm));
+            let record: BCM = result.unwrap();
+            m.insert(record.bc, record.rank);
         }
         m
     };
 }
 
-/// cargo run --example bcrepl
 fn main() {
     loop {
         read_input();
@@ -85,9 +90,9 @@ fn grind(hero: Two, villain: Two, remaining: PlayingCards) -> Wins {
         let hero_rank = BC_RANK.get(&hero7).unwrap();
         let villain_rank = BC_RANK.get(&villain7).unwrap();
 
-        if hero_rank.rank < villain_rank.rank {
+        if hero_rank < villain_rank {
             wins.add_win(Win::FIRST);
-        } else if villain_rank.rank < hero_rank.rank {
+        } else if villain_rank < hero_rank {
             wins.add_win(Win::SECOND);
         } else {
             wins.add_win(Win::FIRST | Win::SECOND);

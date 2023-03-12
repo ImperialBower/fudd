@@ -1,11 +1,12 @@
 use crate::types::arrays::five_card::FiveCard;
 use crate::types::arrays::{Evaluable, Vectorable};
 use crate::types::poker_cards::PokerCards;
+use crate::types::U32Card;
 use serde::{Deserialize, Serialize};
 
 use cardpack::Pile;
 use ckc_rs::hand_rank::{HandRank, HandRankClass};
-use ckc_rs::{CKCNumber, HandError};
+use ckc_rs::HandError;
 use std::cmp::Ordering;
 use std::fmt;
 
@@ -151,8 +152,8 @@ impl fmt::Display for Eval {
     }
 }
 
-impl From<[CKCNumber; 5]> for Eval {
-    fn from(array: [CKCNumber; 5]) -> Self {
+impl From<[U32Card; 5]> for Eval {
+    fn from(array: [U32Card; 5]) -> Self {
         Eval::from(FiveCard::from(array))
     }
 }

@@ -92,7 +92,7 @@ impl Evaluate {
     pub fn percent(number: usize, total: usize) -> f32 {
         match total {
             0 => 0_f32,
-            _ => ((number as f32 * 100.0) / total as f32) as f32,
+            _ => (number as f32 * 100.0) / total as f32,
         }
     }
 }

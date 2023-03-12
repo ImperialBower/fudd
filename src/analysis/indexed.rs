@@ -7,7 +7,7 @@ use indexmap::IndexMap;
 /// [indexmap](https://github.com/bluss/indexmap) crate.
 ///
 /// **NOTE**: This library does not automatically sort the index. Use `Evals` for this.
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Indexed(IndexMap<HandRankValue, Eval>);
 
 impl Indexed {

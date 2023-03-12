@@ -7,10 +7,11 @@ use crate::types::arrays::{Evaluable, Vectorable};
 use crate::types::playing_card::PlayingCard;
 use crate::types::playing_cards::PlayingCards;
 use crate::types::poker_cards::PokerCards;
-use ckc_rs::{CKCNumber, CardNumber, HandError, PokerCard};
+use crate::types::U32Card;
+use ckc_rs::{CardNumber, HandError, PokerCard};
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct SixCard([CKCNumber; 6]);
+pub struct SixCard([U32Card; 6]);
 
 impl SixCard {
     /// permutations to evaluate all 6 card combinations.
@@ -24,7 +25,7 @@ impl SixCard {
     ];
 
     #[must_use]
-    pub fn from_1_and_2_and_3(one: CKCNumber, two: TwoCard, three: ThreeCard) -> SixCard {
+    pub fn from_1_and_2_and_3(one: U32Card, two: TwoCard, three: ThreeCard) -> SixCard {
         SixCard::from([
             one,
             two.first(),
@@ -37,32 +38,32 @@ impl SixCard {
 
     //region getters
     #[must_use]
-    pub fn first(&self) -> CKCNumber {
+    pub fn first(&self) -> U32Card {
         self.0[0]
     }
 
     #[must_use]
-    pub fn second(&self) -> CKCNumber {
+    pub fn second(&self) -> U32Card {
         self.0[1]
     }
 
     #[must_use]
-    pub fn third(&self) -> CKCNumber {
+    pub fn third(&self) -> U32Card {
         self.0[2]
     }
 
     #[must_use]
-    pub fn forth(&self) -> CKCNumber {
+    pub fn forth(&self) -> U32Card {
         self.0[3]
     }
 
     #[must_use]
-    pub fn fifth(&self) -> CKCNumber {
+    pub fn fifth(&self) -> U32Card {
         self.0[4]
     }
 
     #[must_use]
-    pub fn sixth(&self) -> CKCNumber {
+    pub fn sixth(&self) -> U32Card {
         self.0[5]
     }
     //endregion
@@ -71,7 +72,7 @@ impl SixCard {
 impl Evaluable for SixCard {
     fn evals(&self) -> Evals {
         let mut evals = Evals::default();
-        let mut subhand: [CKCNumber; 5] = [CardNumber::BLANK; 5];
+        let mut subhand: [U32Card; 5] = [CardNumber::BLANK; 5];
 
         for ids in &crate::types::arrays::six_card::SixCard::PERMUTATIONS {
             for i in 0..5 {
@@ -97,8 +98,8 @@ impl From<[PlayingCard; 6]> for SixCard {
     }
 }
 
-impl From<[CKCNumber; 6]> for SixCard {
-    fn from(value: [CKCNumber; 6]) -> Self {
+impl From<[U32Card; 6]> for SixCard {
+    fn from(value: [U32Card; 6]) -> Self {
         SixCard(value)
     }
 }
@@ -202,7 +203,7 @@ impl TryFrom<&'static str> for SixCard {
 
 impl Vectorable for SixCard {
     #[must_use]
-    fn to_vec(&self) -> Vec<CKCNumber> {
+    fn to_vec(&self) -> Vec<U32Card> {
         self.0.to_vec()
     }
 }

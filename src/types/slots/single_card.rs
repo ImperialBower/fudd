@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::cell::Cell;
 use std::fmt;
 
-#[derive(Serialize, Deserialize, Clone, Debug, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct SingleCard(Cell<PlayingCard>);
 
 impl SingleCard {
