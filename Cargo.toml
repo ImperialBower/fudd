@@ -1,12 +1,12 @@
 [package]
 name = "fudd"
 description = "Fun with poker"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["gaoler <gaoler@electronicpanopticon.com>"]
 edition = "2021"
 rust-version = "1.64"
 license = "GPL-3.0-or-later"
-exclude = [".github/workflows/*", "examples/*", ".gitignore", "Cargo.lock"]
+exclude = [".github/workflows/*", "data/*", "examples/*", "logs/*", ".gitignore", "Cargo.lock"]
 repository = "https://github.com/ImperialBower/fudd.git"
 homepage = "https://github.com/ImperialBower/fudd"
 
