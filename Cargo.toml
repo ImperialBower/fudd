@@ -1,7 +1,7 @@
 [package]
 name = "fudd"
 description = "Fun with poker"
-version = "0.1.7"
+version = "0.1.8"
 authors = ["gaoler <gaoler@electronicpanopticon.com>"]
 edition = "2021"
 rust-version = "1.65"
@@ -15,16 +15,17 @@ name = "fudd"
 path = "src/lib.rs"
 
 [dependencies]
-cardpack = "0.4.14"
+cardpack = "0.4.19"
 # ckc-rs = { git = "https://github.com/ImperialBower/ckc-rs", branch = "cards" }
 ckc-rs = "0.1.14"
+crossbeam-channel = "0.5.8"
 csv = "1.1.6"
 indexmap = "1.8.0"
 itertools = "0.10.2"
 lazy_static = "1.4.0"
 log = "0.4.16"
 rand = "0.8.4"
-rayon = "1.5.2"
+rayon = "1.7.0"
 serde = { version = "1.0.155", features = ["derive"] }
 strum = { version = "0.24" , features = ["derive"]}
 strum_macros = "0.24"
