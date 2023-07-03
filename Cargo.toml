@@ -1,6 +1,6 @@
 [package]
 name = "fudd"
-description = "Fun with poker"
+description = "Fun with poker. Named after that most famous of rabbit hunters."
 version = "0.1.9"
 authors = ["gaoler <gaoler@electronicpanopticon.com>"]
 edition = "2021"
