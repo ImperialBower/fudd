@@ -1,7 +1,7 @@
 [package]
 name = "fudd"
-description = "Fun with poker"
-version = "0.1.8"
+description = "Fun with poker. Named after that most famous of rabbit hunters."
+version = "0.1.9"
 authors = ["gaoler <gaoler@electronicpanopticon.com>"]
 edition = "2021"
 rust-version = "1.65"
