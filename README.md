@@ -1,4 +1,4 @@
-# FUDD 
+# FUDD (retired, currently being rewritten from scratch)
 
 [![LICENSE](https://img.shields.io/badge/license-GPL3.0-blue.svg)](LICENSE)
 ![Build Status](https://github.com/ImperialBower/fudd/actions/workflows/basic.yaml/badge.svg)
